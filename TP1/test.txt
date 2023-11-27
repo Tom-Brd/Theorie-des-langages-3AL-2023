@@ -1,0 +1,13 @@
+printString("Coucou");
+
+x = 12;
+
+// ceci est un commentaire sur une ligne
+
+/* ceci est un commentaire
+sur plusieurs lignes */
+
+/* ceci est un commentaire
+sur plusieurs lignes */
+
+print(x);
