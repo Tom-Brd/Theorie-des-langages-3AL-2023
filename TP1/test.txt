@@ -7,7 +7,11 @@ x = 12;
 /* ceci est un commentaire
 sur plusieurs lignes */
 
+// x = 10;
+
 /* ceci est un commentaire
 sur plusieurs lignes */
+
+// ceci en est un autre
 
 print(x);

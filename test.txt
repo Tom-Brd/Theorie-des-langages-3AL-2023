@@ -1,0 +1,5 @@
+printString("Coucou");
+
+x = 12;
+
+print(x);
