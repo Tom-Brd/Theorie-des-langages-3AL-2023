@@ -8,13 +8,17 @@ from TP2.genereTreeGraphviz2 import printTreeGraph
 reserved = {
     'print': 'PRINT',
     'toamScan': 'TOAMSCAN',
-    'scan': 'SCAN'
+    'scan': 'SCAN',
+    'if': 'IF',
+    'else if': 'ELSEIF',
+    'else': 'ELSE',
 }
 
 tokens = [
              'NUMBER', 'MINUS',
              'PLUS', 'TIMES', 'DIVIDE',
-             'LPAREN', 'RPAREN', 'AND', 'OR', 'SEMICOLON', 'NAME', 'EQUALS', 'GREATER', 'LESS',
+             'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET',
+             'AND', 'OR', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS', 'NOTEQUALS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
              "STRING", "SIMPLE_COMMENT", "MULTI_COMMENT",
          ] + list(reserved.values())
@@ -26,12 +30,16 @@ t_TIMES = r'\*'
 t_DIVIDE = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_LBRACKET = r'\{'
+t_RBRACKET = r'\}'
 t_AND = r'&'
 t_OR = r'\|'
 t_SEMICOLON = r';'
-t_EQUALS = r'='
+t_ASSIGN = r'='
 t_GREATER = r'>'
 t_LESS = r'<'
+t_EQUALS = r'=='
+t_NOTEQUALS = r'!='
 t_INCREMENT = r'\+\+'
 t_DECREMENT = r'--'
 t_INCREASE = r'\+='
@@ -116,18 +124,27 @@ def p_statement_expr(p):
     p[0] = ('print', p[3])
 
 
+def p_statement_if(p):
+    '''statement : IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+        | IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET'''
+    if len(p) == 8:
+        p[0] = ('if', p[3], p[6])
+    else:
+        p[0] = ('if', p[3], p[6], p[10])
+
+
 def p_statement_toamScan(p):
     '''statement : TOAMSCAN LPAREN NAME RPAREN'''
     p[0] = ('scan', p[3])
 
 
 def p_statement_scan(p):
-    '''statement : NAME EQUALS SCAN LPAREN RPAREN'''
+    '''statement : NAME ASSIGN SCAN LPAREN RPAREN'''
     p[0] = ('scan', p[1])
 
 
 def p_statement_assign(p):
-    'statement : NAME EQUALS expression'
+    'statement : NAME ASSIGN expression'
     p[0] = ('assign', p[1], p[3])
 
 
@@ -164,7 +181,9 @@ def p_expression_binop_bool(p):
     '''expression : expression AND expression
                 | expression OR expression
                 | expression GREATER expression
-                | expression LESS expression'''
+                | expression LESS expression
+                | expression EQUALS expression
+                | expression NOTEQUALS expression'''
     p[0] = (p[2], p[1], p[3])
 
 
@@ -185,6 +204,7 @@ def p_expression_incr_decr(p):
 
 
 def p_error(p):
+    print(p)
     print("Syntax error at '%s'" % p.value)
 
 
@@ -213,6 +233,10 @@ def evalExpr(t):
                 return evalExpr(t[1]) > evalExpr(t[2])
             case '<':
                 return evalExpr(t[1]) < evalExpr(t[2])
+            case '==':
+                return evalExpr(t[1]) == evalExpr(t[2])
+            case '!=':
+                return evalExpr(t[1]) != evalExpr(t[2])
             case _:
                 return
     return 'UNK'
@@ -233,11 +257,18 @@ def evalInst(t):
                     print("TOAM PRINT : ", evalExpr(t[1]))
             case 'scan':
                 names[t[1]] = input()
+            case 'if':
+                if evalExpr(t[1]):
+                    evalInst(t[2])
+                else:
+                    if len(t) == 4:
+                        evalInst(t[3])
             case 'bloc':
                 evalInst(t[1])
                 evalInst(t[2])
             case 'start':
                 evalInst(t[1])
+
 
 import ply.yacc as yacc
 

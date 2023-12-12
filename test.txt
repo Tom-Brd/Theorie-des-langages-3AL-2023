@@ -22,7 +22,21 @@ print(x);
 x -= 5;
 print(x);
 
+toamScan(y);
+print(y);
+
 print(x * 2);
-x = 25 / 0;
 
 print(x);
+
+if (x == 0) {
+    print("x est égal à 0");
+    // ceci est un commentaire dans le if
+    print("x est toujours égal à 0");
+} else {
+    print("x n'est pas égal à 0");
+};
+
+print("Fin du si");
+
+print("Fin du programme");

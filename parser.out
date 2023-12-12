@@ -1,5 +1,9 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    ELSEIF
+
 Grammar
 
 Rule 0     S' -> start
@@ -12,58 +16,69 @@ Rule 6     bloc -> bloc MULTI_COMMENT
 Rule 7     bloc -> MULTI_COMMENT
 Rule 8     statement -> PRINT LPAREN expression RPAREN
 Rule 9     statement -> PRINT LPAREN STRING RPAREN
-Rule 10    statement -> TOAMSCAN LPAREN NAME RPAREN
-Rule 11    statement -> NAME EQUALS SCAN LPAREN RPAREN
-Rule 12    statement -> NAME EQUALS expression
-Rule 13    expression -> expression MINUS expression
-Rule 14    expression -> expression DIVIDE expression
-Rule 15    expression -> expression PLUS expression
-Rule 16    expression -> expression TIMES expression
-Rule 17    expression -> LPAREN expression RPAREN
-Rule 18    expression -> NUMBER
-Rule 19    expression -> NAME
-Rule 20    expression -> STRING
-Rule 21    expression -> expression AND expression
-Rule 22    expression -> expression OR expression
-Rule 23    expression -> expression GREATER expression
-Rule 24    expression -> expression LESS expression
-Rule 25    statement -> NAME INCREMENT
-Rule 26    statement -> NAME DECREMENT
-Rule 27    statement -> NAME INCREASE expression
-Rule 28    statement -> NAME DECREASE expression
+Rule 10    statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+Rule 11    statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+Rule 12    statement -> TOAMSCAN LPAREN NAME RPAREN
+Rule 13    statement -> NAME ASSIGN SCAN LPAREN RPAREN
+Rule 14    statement -> NAME ASSIGN expression
+Rule 15    expression -> expression MINUS expression
+Rule 16    expression -> expression DIVIDE expression
+Rule 17    expression -> expression PLUS expression
+Rule 18    expression -> expression TIMES expression
+Rule 19    expression -> LPAREN expression RPAREN
+Rule 20    expression -> NUMBER
+Rule 21    expression -> NAME
+Rule 22    expression -> STRING
+Rule 23    expression -> expression AND expression
+Rule 24    expression -> expression OR expression
+Rule 25    expression -> expression GREATER expression
+Rule 26    expression -> expression LESS expression
+Rule 27    expression -> expression EQUALS expression
+Rule 28    expression -> expression NOTEQUALS expression
+Rule 29    statement -> NAME INCREMENT
+Rule 30    statement -> NAME DECREMENT
+Rule 31    statement -> NAME INCREASE expression
+Rule 32    statement -> NAME DECREASE expression
 
 Terminals, with rules where they appear
 
-AND                  : 21
-DECREASE             : 28
-DECREMENT            : 26
-DIVIDE               : 14
-EQUALS               : 11 12
-GREATER              : 23
-INCREASE             : 27
-INCREMENT            : 25
-LESS                 : 24
-LPAREN               : 8 9 10 11 17
-MINUS                : 13
+AND                  : 23
+ASSIGN               : 13 14
+DECREASE             : 32
+DECREMENT            : 30
+DIVIDE               : 16
+ELSE                 : 11
+ELSEIF               : 
+EQUALS               : 27
+GREATER              : 25
+IF                   : 10 11
+INCREASE             : 31
+INCREMENT            : 29
+LBRACKET             : 10 11 11
+LESS                 : 26
+LPAREN               : 8 9 10 11 12 13 19
+MINUS                : 15
 MULTI_COMMENT        : 6 7
-NAME                 : 10 11 12 19 25 26 27 28
-NUMBER               : 18
-OR                   : 22
-PLUS                 : 15
+NAME                 : 12 13 14 21 29 30 31 32
+NOTEQUALS            : 28
+NUMBER               : 20
+OR                   : 24
+PLUS                 : 17
 PRINT                : 8 9
-RPAREN               : 8 9 10 11 17
-SCAN                 : 11
+RBRACKET             : 10 11 11
+RPAREN               : 8 9 10 11 12 13 19
+SCAN                 : 13
 SEMICOLON            : 2 3
 SIMPLE_COMMENT       : 4 5
-STRING               : 9 20
-TIMES                : 16
-TOAMSCAN             : 10
+STRING               : 9 22
+TIMES                : 18
+TOAMSCAN             : 12
 error                : 
 
 Nonterminals, with rules where they appear
 
-bloc                 : 1 2 4 6
-expression           : 8 12 13 13 14 14 15 15 16 16 17 21 21 22 22 23 23 24 24 27 28
+bloc                 : 1 2 4 6 10 11 11
+expression           : 8 10 11 14 15 15 16 16 17 17 18 18 19 23 23 24 24 25 25 26 26 27 27 28 28 31 32
 start                : 0
 statement            : 2 3
 
@@ -81,19 +96,22 @@ state 0
     (7) bloc -> . MULTI_COMMENT
     (8) statement -> . PRINT LPAREN expression RPAREN
     (9) statement -> . PRINT LPAREN STRING RPAREN
-    (10) statement -> . TOAMSCAN LPAREN NAME RPAREN
-    (11) statement -> . NAME EQUALS SCAN LPAREN RPAREN
-    (12) statement -> . NAME EQUALS expression
-    (25) statement -> . NAME INCREMENT
-    (26) statement -> . NAME DECREMENT
-    (27) statement -> . NAME INCREASE expression
-    (28) statement -> . NAME DECREASE expression
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
 
     SIMPLE_COMMENT  shift and go to state 4
     MULTI_COMMENT   shift and go to state 5
     PRINT           shift and go to state 6
-    TOAMSCAN        shift and go to state 7
-    NAME            shift and go to state 8
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
 
     start                          shift and go to state 1
     bloc                           shift and go to state 2
@@ -113,28 +131,31 @@ state 2
     (6) bloc -> bloc . MULTI_COMMENT
     (8) statement -> . PRINT LPAREN expression RPAREN
     (9) statement -> . PRINT LPAREN STRING RPAREN
-    (10) statement -> . TOAMSCAN LPAREN NAME RPAREN
-    (11) statement -> . NAME EQUALS SCAN LPAREN RPAREN
-    (12) statement -> . NAME EQUALS expression
-    (25) statement -> . NAME INCREMENT
-    (26) statement -> . NAME DECREMENT
-    (27) statement -> . NAME INCREASE expression
-    (28) statement -> . NAME DECREASE expression
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
 
     $end            reduce using rule 1 (start -> bloc .)
-    SIMPLE_COMMENT  shift and go to state 10
-    MULTI_COMMENT   shift and go to state 11
+    SIMPLE_COMMENT  shift and go to state 11
+    MULTI_COMMENT   shift and go to state 12
     PRINT           shift and go to state 6
-    TOAMSCAN        shift and go to state 7
-    NAME            shift and go to state 8
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
 
-    statement                      shift and go to state 9
+    statement                      shift and go to state 10
 
 state 3
 
     (3) bloc -> statement . SEMICOLON
 
-    SEMICOLON       shift and go to state 12
+    SEMICOLON       shift and go to state 13
 
 
 state 4
@@ -144,9 +165,11 @@ state 4
     SIMPLE_COMMENT  reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
     MULTI_COMMENT   reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
     PRINT           reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
+    IF              reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
     TOAMSCAN        reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
     NAME            reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
     $end            reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
+    RBRACKET        reduce using rule 5 (bloc -> SIMPLE_COMMENT .)
 
 
 state 5
@@ -156,9 +179,11 @@ state 5
     SIMPLE_COMMENT  reduce using rule 7 (bloc -> MULTI_COMMENT .)
     MULTI_COMMENT   reduce using rule 7 (bloc -> MULTI_COMMENT .)
     PRINT           reduce using rule 7 (bloc -> MULTI_COMMENT .)
+    IF              reduce using rule 7 (bloc -> MULTI_COMMENT .)
     TOAMSCAN        reduce using rule 7 (bloc -> MULTI_COMMENT .)
     NAME            reduce using rule 7 (bloc -> MULTI_COMMENT .)
     $end            reduce using rule 7 (bloc -> MULTI_COMMENT .)
+    RBRACKET        reduce using rule 7 (bloc -> MULTI_COMMENT .)
 
 
 state 6
@@ -166,921 +191,1414 @@ state 6
     (8) statement -> PRINT . LPAREN expression RPAREN
     (9) statement -> PRINT . LPAREN STRING RPAREN
 
-    LPAREN          shift and go to state 13
+    LPAREN          shift and go to state 14
 
 
 state 7
 
-    (10) statement -> TOAMSCAN . LPAREN NAME RPAREN
+    (10) statement -> IF . LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> IF . LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
 
-    LPAREN          shift and go to state 14
+    LPAREN          shift and go to state 15
 
 
 state 8
 
-    (11) statement -> NAME . EQUALS SCAN LPAREN RPAREN
-    (12) statement -> NAME . EQUALS expression
-    (25) statement -> NAME . INCREMENT
-    (26) statement -> NAME . DECREMENT
-    (27) statement -> NAME . INCREASE expression
-    (28) statement -> NAME . DECREASE expression
+    (12) statement -> TOAMSCAN . LPAREN NAME RPAREN
 
-    EQUALS          shift and go to state 15
-    INCREMENT       shift and go to state 16
-    DECREMENT       shift and go to state 17
-    INCREASE        shift and go to state 18
-    DECREASE        shift and go to state 19
+    LPAREN          shift and go to state 16
 
 
 state 9
 
-    (2) bloc -> bloc statement . SEMICOLON
+    (13) statement -> NAME . ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> NAME . ASSIGN expression
+    (29) statement -> NAME . INCREMENT
+    (30) statement -> NAME . DECREMENT
+    (31) statement -> NAME . INCREASE expression
+    (32) statement -> NAME . DECREASE expression
 
-    SEMICOLON       shift and go to state 20
+    ASSIGN          shift and go to state 17
+    INCREMENT       shift and go to state 18
+    DECREMENT       shift and go to state 19
+    INCREASE        shift and go to state 20
+    DECREASE        shift and go to state 21
 
 
 state 10
+
+    (2) bloc -> bloc statement . SEMICOLON
+
+    SEMICOLON       shift and go to state 22
+
+
+state 11
 
     (4) bloc -> bloc SIMPLE_COMMENT .
 
     SIMPLE_COMMENT  reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
     MULTI_COMMENT   reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
     PRINT           reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
+    IF              reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
     TOAMSCAN        reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
     NAME            reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
     $end            reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
+    RBRACKET        reduce using rule 4 (bloc -> bloc SIMPLE_COMMENT .)
 
 
-state 11
+state 12
 
     (6) bloc -> bloc MULTI_COMMENT .
 
     SIMPLE_COMMENT  reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
     MULTI_COMMENT   reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
     PRINT           reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
+    IF              reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
     TOAMSCAN        reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
     NAME            reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
     $end            reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
+    RBRACKET        reduce using rule 6 (bloc -> bloc MULTI_COMMENT .)
 
 
-state 12
+state 13
 
     (3) bloc -> statement SEMICOLON .
 
     SIMPLE_COMMENT  reduce using rule 3 (bloc -> statement SEMICOLON .)
     MULTI_COMMENT   reduce using rule 3 (bloc -> statement SEMICOLON .)
     PRINT           reduce using rule 3 (bloc -> statement SEMICOLON .)
+    IF              reduce using rule 3 (bloc -> statement SEMICOLON .)
     TOAMSCAN        reduce using rule 3 (bloc -> statement SEMICOLON .)
     NAME            reduce using rule 3 (bloc -> statement SEMICOLON .)
     $end            reduce using rule 3 (bloc -> statement SEMICOLON .)
+    RBRACKET        reduce using rule 3 (bloc -> statement SEMICOLON .)
 
-
-state 13
-
-    (8) statement -> PRINT LPAREN . expression RPAREN
-    (9) statement -> PRINT LPAREN . STRING RPAREN
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    STRING          shift and go to state 23
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-
-    expression                     shift and go to state 22
 
 state 14
 
-    (10) statement -> TOAMSCAN LPAREN . NAME RPAREN
+    (8) statement -> PRINT LPAREN . expression RPAREN
+    (9) statement -> PRINT LPAREN . STRING RPAREN
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-    NAME            shift and go to state 26
+    STRING          shift and go to state 25
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
 
+    expression                     shift and go to state 24
 
 state 15
 
-    (11) statement -> NAME EQUALS . SCAN LPAREN RPAREN
-    (12) statement -> NAME EQUALS . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
+    (10) statement -> IF LPAREN . expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> IF LPAREN . expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-    SCAN            shift and go to state 27
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
     STRING          shift and go to state 29
 
     expression                     shift and go to state 28
 
 state 16
 
-    (25) statement -> NAME INCREMENT .
+    (12) statement -> TOAMSCAN LPAREN . NAME RPAREN
 
-    SEMICOLON       reduce using rule 25 (statement -> NAME INCREMENT .)
+    NAME            shift and go to state 30
 
 
 state 17
 
-    (26) statement -> NAME DECREMENT .
+    (13) statement -> NAME ASSIGN . SCAN LPAREN RPAREN
+    (14) statement -> NAME ASSIGN . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-    SEMICOLON       reduce using rule 26 (statement -> NAME DECREMENT .)
+    SCAN            shift and go to state 31
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
 
+    expression                     shift and go to state 32
 
 state 18
 
-    (27) statement -> NAME INCREASE . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
+    (29) statement -> NAME INCREMENT .
 
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
+    SEMICOLON       reduce using rule 29 (statement -> NAME INCREMENT .)
 
-    expression                     shift and go to state 30
 
 state 19
 
-    (28) statement -> NAME DECREASE . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
+    (30) statement -> NAME DECREMENT .
 
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
+    SEMICOLON       reduce using rule 30 (statement -> NAME DECREMENT .)
 
-    expression                     shift and go to state 31
 
 state 20
+
+    (31) statement -> NAME INCREASE . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 33
+
+state 21
+
+    (32) statement -> NAME DECREASE . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 34
+
+state 22
 
     (2) bloc -> bloc statement SEMICOLON .
 
     SIMPLE_COMMENT  reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
     MULTI_COMMENT   reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
     PRINT           reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
+    IF              reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
     TOAMSCAN        reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
     NAME            reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
     $end            reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
-
-
-state 21
-
-    (17) expression -> LPAREN . expression RPAREN
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 32
-
-state 22
-
-    (8) statement -> PRINT LPAREN expression . RPAREN
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
-
-    RPAREN          shift and go to state 33
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    AND             shift and go to state 38
-    OR              shift and go to state 39
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
+    RBRACKET        reduce using rule 2 (bloc -> bloc statement SEMICOLON .)
 
 
 state 23
 
-    (9) statement -> PRINT LPAREN STRING . RPAREN
-    (20) expression -> STRING .
+    (19) expression -> LPAREN . expression RPAREN
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-  ! shift/reduce conflict for RPAREN resolved as shift
-    RPAREN          shift and go to state 42
-    MINUS           reduce using rule 20 (expression -> STRING .)
-    DIVIDE          reduce using rule 20 (expression -> STRING .)
-    PLUS            reduce using rule 20 (expression -> STRING .)
-    TIMES           reduce using rule 20 (expression -> STRING .)
-    AND             reduce using rule 20 (expression -> STRING .)
-    OR              reduce using rule 20 (expression -> STRING .)
-    GREATER         reduce using rule 20 (expression -> STRING .)
-    LESS            reduce using rule 20 (expression -> STRING .)
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
 
-  ! RPAREN          [ reduce using rule 20 (expression -> STRING .) ]
-
+    expression                     shift and go to state 35
 
 state 24
 
-    (18) expression -> NUMBER .
+    (8) statement -> PRINT LPAREN expression . RPAREN
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    RPAREN          reduce using rule 18 (expression -> NUMBER .)
-    MINUS           reduce using rule 18 (expression -> NUMBER .)
-    DIVIDE          reduce using rule 18 (expression -> NUMBER .)
-    PLUS            reduce using rule 18 (expression -> NUMBER .)
-    TIMES           reduce using rule 18 (expression -> NUMBER .)
-    AND             reduce using rule 18 (expression -> NUMBER .)
-    OR              reduce using rule 18 (expression -> NUMBER .)
-    GREATER         reduce using rule 18 (expression -> NUMBER .)
-    LESS            reduce using rule 18 (expression -> NUMBER .)
-    SEMICOLON       reduce using rule 18 (expression -> NUMBER .)
+    RPAREN          shift and go to state 36
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
 
 
 state 25
 
-    (19) expression -> NAME .
+    (9) statement -> PRINT LPAREN STRING . RPAREN
+    (22) expression -> STRING .
 
-    RPAREN          reduce using rule 19 (expression -> NAME .)
-    MINUS           reduce using rule 19 (expression -> NAME .)
-    DIVIDE          reduce using rule 19 (expression -> NAME .)
-    PLUS            reduce using rule 19 (expression -> NAME .)
-    TIMES           reduce using rule 19 (expression -> NAME .)
-    AND             reduce using rule 19 (expression -> NAME .)
-    OR              reduce using rule 19 (expression -> NAME .)
-    GREATER         reduce using rule 19 (expression -> NAME .)
-    LESS            reduce using rule 19 (expression -> NAME .)
-    SEMICOLON       reduce using rule 19 (expression -> NAME .)
+  ! shift/reduce conflict for RPAREN resolved as shift
+    RPAREN          shift and go to state 47
+    MINUS           reduce using rule 22 (expression -> STRING .)
+    DIVIDE          reduce using rule 22 (expression -> STRING .)
+    PLUS            reduce using rule 22 (expression -> STRING .)
+    TIMES           reduce using rule 22 (expression -> STRING .)
+    AND             reduce using rule 22 (expression -> STRING .)
+    OR              reduce using rule 22 (expression -> STRING .)
+    GREATER         reduce using rule 22 (expression -> STRING .)
+    LESS            reduce using rule 22 (expression -> STRING .)
+    EQUALS          reduce using rule 22 (expression -> STRING .)
+    NOTEQUALS       reduce using rule 22 (expression -> STRING .)
+
+  ! RPAREN          [ reduce using rule 22 (expression -> STRING .) ]
 
 
 state 26
 
-    (10) statement -> TOAMSCAN LPAREN NAME . RPAREN
+    (20) expression -> NUMBER .
 
-    RPAREN          shift and go to state 43
+    RPAREN          reduce using rule 20 (expression -> NUMBER .)
+    MINUS           reduce using rule 20 (expression -> NUMBER .)
+    DIVIDE          reduce using rule 20 (expression -> NUMBER .)
+    PLUS            reduce using rule 20 (expression -> NUMBER .)
+    TIMES           reduce using rule 20 (expression -> NUMBER .)
+    AND             reduce using rule 20 (expression -> NUMBER .)
+    OR              reduce using rule 20 (expression -> NUMBER .)
+    GREATER         reduce using rule 20 (expression -> NUMBER .)
+    LESS            reduce using rule 20 (expression -> NUMBER .)
+    EQUALS          reduce using rule 20 (expression -> NUMBER .)
+    NOTEQUALS       reduce using rule 20 (expression -> NUMBER .)
+    SEMICOLON       reduce using rule 20 (expression -> NUMBER .)
 
 
 state 27
 
-    (11) statement -> NAME EQUALS SCAN . LPAREN RPAREN
+    (21) expression -> NAME .
 
-    LPAREN          shift and go to state 44
+    RPAREN          reduce using rule 21 (expression -> NAME .)
+    MINUS           reduce using rule 21 (expression -> NAME .)
+    DIVIDE          reduce using rule 21 (expression -> NAME .)
+    PLUS            reduce using rule 21 (expression -> NAME .)
+    TIMES           reduce using rule 21 (expression -> NAME .)
+    AND             reduce using rule 21 (expression -> NAME .)
+    OR              reduce using rule 21 (expression -> NAME .)
+    GREATER         reduce using rule 21 (expression -> NAME .)
+    LESS            reduce using rule 21 (expression -> NAME .)
+    EQUALS          reduce using rule 21 (expression -> NAME .)
+    NOTEQUALS       reduce using rule 21 (expression -> NAME .)
+    SEMICOLON       reduce using rule 21 (expression -> NAME .)
 
 
 state 28
 
-    (12) statement -> NAME EQUALS expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (10) statement -> IF LPAREN expression . RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> IF LPAREN expression . RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    SEMICOLON       reduce using rule 12 (statement -> NAME EQUALS expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    AND             shift and go to state 38
-    OR              shift and go to state 39
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
+    RPAREN          shift and go to state 48
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
 
 
 state 29
 
-    (20) expression -> STRING .
+    (22) expression -> STRING .
 
-    MINUS           reduce using rule 20 (expression -> STRING .)
-    DIVIDE          reduce using rule 20 (expression -> STRING .)
-    PLUS            reduce using rule 20 (expression -> STRING .)
-    TIMES           reduce using rule 20 (expression -> STRING .)
-    AND             reduce using rule 20 (expression -> STRING .)
-    OR              reduce using rule 20 (expression -> STRING .)
-    GREATER         reduce using rule 20 (expression -> STRING .)
-    LESS            reduce using rule 20 (expression -> STRING .)
-    SEMICOLON       reduce using rule 20 (expression -> STRING .)
-    RPAREN          reduce using rule 20 (expression -> STRING .)
+    RPAREN          reduce using rule 22 (expression -> STRING .)
+    MINUS           reduce using rule 22 (expression -> STRING .)
+    DIVIDE          reduce using rule 22 (expression -> STRING .)
+    PLUS            reduce using rule 22 (expression -> STRING .)
+    TIMES           reduce using rule 22 (expression -> STRING .)
+    AND             reduce using rule 22 (expression -> STRING .)
+    OR              reduce using rule 22 (expression -> STRING .)
+    GREATER         reduce using rule 22 (expression -> STRING .)
+    LESS            reduce using rule 22 (expression -> STRING .)
+    EQUALS          reduce using rule 22 (expression -> STRING .)
+    NOTEQUALS       reduce using rule 22 (expression -> STRING .)
+    SEMICOLON       reduce using rule 22 (expression -> STRING .)
 
 
 state 30
 
-    (27) statement -> NAME INCREASE expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (12) statement -> TOAMSCAN LPAREN NAME . RPAREN
 
-    SEMICOLON       reduce using rule 27 (statement -> NAME INCREASE expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    AND             shift and go to state 38
-    OR              shift and go to state 39
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
+    RPAREN          shift and go to state 49
 
 
 state 31
 
-    (28) statement -> NAME DECREASE expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (13) statement -> NAME ASSIGN SCAN . LPAREN RPAREN
 
-    SEMICOLON       reduce using rule 28 (statement -> NAME DECREASE expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    AND             shift and go to state 38
-    OR              shift and go to state 39
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
+    LPAREN          shift and go to state 50
 
 
 state 32
 
-    (17) expression -> LPAREN expression . RPAREN
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (14) statement -> NAME ASSIGN expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    RPAREN          shift and go to state 45
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    AND             shift and go to state 38
-    OR              shift and go to state 39
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
+    SEMICOLON       reduce using rule 14 (statement -> NAME ASSIGN expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
 
 
 state 33
+
+    (31) statement -> NAME INCREASE expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    SEMICOLON       reduce using rule 31 (statement -> NAME INCREASE expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
+
+
+state 34
+
+    (32) statement -> NAME DECREASE expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    SEMICOLON       reduce using rule 32 (statement -> NAME DECREASE expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
+
+
+state 35
+
+    (19) expression -> LPAREN expression . RPAREN
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          shift and go to state 51
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
+
+
+state 36
 
     (8) statement -> PRINT LPAREN expression RPAREN .
 
     SEMICOLON       reduce using rule 8 (statement -> PRINT LPAREN expression RPAREN .)
 
 
-state 34
-
-    (13) expression -> expression MINUS . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 46
-
-state 35
-
-    (14) expression -> expression DIVIDE . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 47
-
-state 36
-
-    (15) expression -> expression PLUS . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 48
-
 state 37
 
-    (16) expression -> expression TIMES . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
+    (15) expression -> expression MINUS . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 49
-
-state 38
-
-    (21) expression -> expression AND . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 50
-
-state 39
-
-    (22) expression -> expression OR . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
-    STRING          shift and go to state 29
-
-    expression                     shift and go to state 51
-
-state 40
-
-    (23) expression -> expression GREATER . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
-
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
     STRING          shift and go to state 29
 
     expression                     shift and go to state 52
 
-state 41
+state 38
 
-    (24) expression -> expression LESS . expression
-    (13) expression -> . expression MINUS expression
-    (14) expression -> . expression DIVIDE expression
-    (15) expression -> . expression PLUS expression
-    (16) expression -> . expression TIMES expression
-    (17) expression -> . LPAREN expression RPAREN
-    (18) expression -> . NUMBER
-    (19) expression -> . NAME
-    (20) expression -> . STRING
-    (21) expression -> . expression AND expression
-    (22) expression -> . expression OR expression
-    (23) expression -> . expression GREATER expression
-    (24) expression -> . expression LESS expression
+    (16) expression -> expression DIVIDE . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
 
-    LPAREN          shift and go to state 21
-    NUMBER          shift and go to state 24
-    NAME            shift and go to state 25
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
     STRING          shift and go to state 29
 
     expression                     shift and go to state 53
 
+state 39
+
+    (17) expression -> expression PLUS . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 54
+
+state 40
+
+    (18) expression -> expression TIMES . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 55
+
+state 41
+
+    (23) expression -> expression AND . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 56
+
 state 42
+
+    (24) expression -> expression OR . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 57
+
+state 43
+
+    (25) expression -> expression GREATER . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 58
+
+state 44
+
+    (26) expression -> expression LESS . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 59
+
+state 45
+
+    (27) expression -> expression EQUALS . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 60
+
+state 46
+
+    (28) expression -> expression NOTEQUALS . expression
+    (15) expression -> . expression MINUS expression
+    (16) expression -> . expression DIVIDE expression
+    (17) expression -> . expression PLUS expression
+    (18) expression -> . expression TIMES expression
+    (19) expression -> . LPAREN expression RPAREN
+    (20) expression -> . NUMBER
+    (21) expression -> . NAME
+    (22) expression -> . STRING
+    (23) expression -> . expression AND expression
+    (24) expression -> . expression OR expression
+    (25) expression -> . expression GREATER expression
+    (26) expression -> . expression LESS expression
+    (27) expression -> . expression EQUALS expression
+    (28) expression -> . expression NOTEQUALS expression
+
+    LPAREN          shift and go to state 23
+    NUMBER          shift and go to state 26
+    NAME            shift and go to state 27
+    STRING          shift and go to state 29
+
+    expression                     shift and go to state 61
+
+state 47
 
     (9) statement -> PRINT LPAREN STRING RPAREN .
 
     SEMICOLON       reduce using rule 9 (statement -> PRINT LPAREN STRING RPAREN .)
 
 
-state 43
-
-    (10) statement -> TOAMSCAN LPAREN NAME RPAREN .
-
-    SEMICOLON       reduce using rule 10 (statement -> TOAMSCAN LPAREN NAME RPAREN .)
-
-
-state 44
-
-    (11) statement -> NAME EQUALS SCAN LPAREN . RPAREN
-
-    RPAREN          shift and go to state 54
-
-
-state 45
-
-    (17) expression -> LPAREN expression RPAREN .
-
-    RPAREN          reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    TIMES           reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    AND             reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    OR              reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    GREATER         reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    LESS            reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-    SEMICOLON       reduce using rule 17 (expression -> LPAREN expression RPAREN .)
-
-
-state 46
-
-    (13) expression -> expression MINUS expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
-
-    RPAREN          reduce using rule 13 (expression -> expression MINUS expression .)
-    MINUS           reduce using rule 13 (expression -> expression MINUS expression .)
-    PLUS            reduce using rule 13 (expression -> expression MINUS expression .)
-    AND             reduce using rule 13 (expression -> expression MINUS expression .)
-    OR              reduce using rule 13 (expression -> expression MINUS expression .)
-    GREATER         reduce using rule 13 (expression -> expression MINUS expression .)
-    LESS            reduce using rule 13 (expression -> expression MINUS expression .)
-    SEMICOLON       reduce using rule 13 (expression -> expression MINUS expression .)
-    DIVIDE          shift and go to state 35
-    TIMES           shift and go to state 37
-
-  ! DIVIDE          [ reduce using rule 13 (expression -> expression MINUS expression .) ]
-  ! TIMES           [ reduce using rule 13 (expression -> expression MINUS expression .) ]
-  ! MINUS           [ shift and go to state 34 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
-
-
-state 47
-
-    (14) expression -> expression DIVIDE expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
-
-    RPAREN          reduce using rule 14 (expression -> expression DIVIDE expression .)
-    MINUS           reduce using rule 14 (expression -> expression DIVIDE expression .)
-    DIVIDE          reduce using rule 14 (expression -> expression DIVIDE expression .)
-    PLUS            reduce using rule 14 (expression -> expression DIVIDE expression .)
-    TIMES           reduce using rule 14 (expression -> expression DIVIDE expression .)
-    AND             reduce using rule 14 (expression -> expression DIVIDE expression .)
-    OR              reduce using rule 14 (expression -> expression DIVIDE expression .)
-    GREATER         reduce using rule 14 (expression -> expression DIVIDE expression .)
-    LESS            reduce using rule 14 (expression -> expression DIVIDE expression .)
-    SEMICOLON       reduce using rule 14 (expression -> expression DIVIDE expression .)
-
-  ! MINUS           [ shift and go to state 34 ]
-  ! DIVIDE          [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! TIMES           [ shift and go to state 37 ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
-
-
 state 48
 
-    (15) expression -> expression PLUS expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (10) statement -> IF LPAREN expression RPAREN . LBRACKET bloc RBRACKET
+    (11) statement -> IF LPAREN expression RPAREN . LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
 
-    RPAREN          reduce using rule 15 (expression -> expression PLUS expression .)
-    MINUS           reduce using rule 15 (expression -> expression PLUS expression .)
-    PLUS            reduce using rule 15 (expression -> expression PLUS expression .)
-    AND             reduce using rule 15 (expression -> expression PLUS expression .)
-    OR              reduce using rule 15 (expression -> expression PLUS expression .)
-    GREATER         reduce using rule 15 (expression -> expression PLUS expression .)
-    LESS            reduce using rule 15 (expression -> expression PLUS expression .)
-    SEMICOLON       reduce using rule 15 (expression -> expression PLUS expression .)
-    DIVIDE          shift and go to state 35
-    TIMES           shift and go to state 37
-
-  ! DIVIDE          [ reduce using rule 15 (expression -> expression PLUS expression .) ]
-  ! TIMES           [ reduce using rule 15 (expression -> expression PLUS expression .) ]
-  ! MINUS           [ shift and go to state 34 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
+    LBRACKET        shift and go to state 62
 
 
 state 49
 
-    (16) expression -> expression TIMES expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (12) statement -> TOAMSCAN LPAREN NAME RPAREN .
 
-    RPAREN          reduce using rule 16 (expression -> expression TIMES expression .)
-    MINUS           reduce using rule 16 (expression -> expression TIMES expression .)
-    DIVIDE          reduce using rule 16 (expression -> expression TIMES expression .)
-    PLUS            reduce using rule 16 (expression -> expression TIMES expression .)
-    TIMES           reduce using rule 16 (expression -> expression TIMES expression .)
-    AND             reduce using rule 16 (expression -> expression TIMES expression .)
-    OR              reduce using rule 16 (expression -> expression TIMES expression .)
-    GREATER         reduce using rule 16 (expression -> expression TIMES expression .)
-    LESS            reduce using rule 16 (expression -> expression TIMES expression .)
-    SEMICOLON       reduce using rule 16 (expression -> expression TIMES expression .)
-
-  ! MINUS           [ shift and go to state 34 ]
-  ! DIVIDE          [ shift and go to state 35 ]
-  ! PLUS            [ shift and go to state 36 ]
-  ! TIMES           [ shift and go to state 37 ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
+    SEMICOLON       reduce using rule 12 (statement -> TOAMSCAN LPAREN NAME RPAREN .)
 
 
 state 50
 
-    (21) expression -> expression AND expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (13) statement -> NAME ASSIGN SCAN LPAREN . RPAREN
 
-    RPAREN          reduce using rule 21 (expression -> expression AND expression .)
-    AND             reduce using rule 21 (expression -> expression AND expression .)
-    OR              reduce using rule 21 (expression -> expression AND expression .)
-    SEMICOLON       reduce using rule 21 (expression -> expression AND expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
-
-  ! MINUS           [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! DIVIDE          [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! PLUS            [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! TIMES           [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! GREATER         [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! LESS            [ reduce using rule 21 (expression -> expression AND expression .) ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
+    RPAREN          shift and go to state 63
 
 
 state 51
 
-    (22) expression -> expression OR expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (19) expression -> LPAREN expression RPAREN .
 
-    RPAREN          reduce using rule 22 (expression -> expression OR expression .)
-    AND             reduce using rule 22 (expression -> expression OR expression .)
-    OR              reduce using rule 22 (expression -> expression OR expression .)
-    SEMICOLON       reduce using rule 22 (expression -> expression OR expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
-    GREATER         shift and go to state 40
-    LESS            shift and go to state 41
-
-  ! MINUS           [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! DIVIDE          [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! PLUS            [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! TIMES           [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! GREATER         [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! LESS            [ reduce using rule 22 (expression -> expression OR expression .) ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
+    RPAREN          reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    TIMES           reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    AND             reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    OR              reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    GREATER         reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    LESS            reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    EQUALS          reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    NOTEQUALS       reduce using rule 19 (expression -> LPAREN expression RPAREN .)
+    SEMICOLON       reduce using rule 19 (expression -> LPAREN expression RPAREN .)
 
 
 state 52
 
-    (23) expression -> expression GREATER expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (15) expression -> expression MINUS expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    RPAREN          reduce using rule 23 (expression -> expression GREATER expression .)
-    AND             reduce using rule 23 (expression -> expression GREATER expression .)
-    OR              reduce using rule 23 (expression -> expression GREATER expression .)
-    GREATER         reduce using rule 23 (expression -> expression GREATER expression .)
-    LESS            reduce using rule 23 (expression -> expression GREATER expression .)
-    SEMICOLON       reduce using rule 23 (expression -> expression GREATER expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
+    RPAREN          reduce using rule 15 (expression -> expression MINUS expression .)
+    MINUS           reduce using rule 15 (expression -> expression MINUS expression .)
+    PLUS            reduce using rule 15 (expression -> expression MINUS expression .)
+    AND             reduce using rule 15 (expression -> expression MINUS expression .)
+    OR              reduce using rule 15 (expression -> expression MINUS expression .)
+    GREATER         reduce using rule 15 (expression -> expression MINUS expression .)
+    LESS            reduce using rule 15 (expression -> expression MINUS expression .)
+    EQUALS          reduce using rule 15 (expression -> expression MINUS expression .)
+    NOTEQUALS       reduce using rule 15 (expression -> expression MINUS expression .)
+    SEMICOLON       reduce using rule 15 (expression -> expression MINUS expression .)
+    DIVIDE          shift and go to state 38
+    TIMES           shift and go to state 40
 
-  ! MINUS           [ reduce using rule 23 (expression -> expression GREATER expression .) ]
-  ! DIVIDE          [ reduce using rule 23 (expression -> expression GREATER expression .) ]
-  ! PLUS            [ reduce using rule 23 (expression -> expression GREATER expression .) ]
-  ! TIMES           [ reduce using rule 23 (expression -> expression GREATER expression .) ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
+  ! DIVIDE          [ reduce using rule 15 (expression -> expression MINUS expression .) ]
+  ! TIMES           [ reduce using rule 15 (expression -> expression MINUS expression .) ]
+  ! MINUS           [ shift and go to state 37 ]
+  ! PLUS            [ shift and go to state 39 ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
 
 
 state 53
 
-    (24) expression -> expression LESS expression .
-    (13) expression -> expression . MINUS expression
-    (14) expression -> expression . DIVIDE expression
-    (15) expression -> expression . PLUS expression
-    (16) expression -> expression . TIMES expression
-    (21) expression -> expression . AND expression
-    (22) expression -> expression . OR expression
-    (23) expression -> expression . GREATER expression
-    (24) expression -> expression . LESS expression
+    (16) expression -> expression DIVIDE expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    RPAREN          reduce using rule 24 (expression -> expression LESS expression .)
-    AND             reduce using rule 24 (expression -> expression LESS expression .)
-    OR              reduce using rule 24 (expression -> expression LESS expression .)
-    GREATER         reduce using rule 24 (expression -> expression LESS expression .)
-    LESS            reduce using rule 24 (expression -> expression LESS expression .)
-    SEMICOLON       reduce using rule 24 (expression -> expression LESS expression .)
-    MINUS           shift and go to state 34
-    DIVIDE          shift and go to state 35
-    PLUS            shift and go to state 36
-    TIMES           shift and go to state 37
+    RPAREN          reduce using rule 16 (expression -> expression DIVIDE expression .)
+    MINUS           reduce using rule 16 (expression -> expression DIVIDE expression .)
+    DIVIDE          reduce using rule 16 (expression -> expression DIVIDE expression .)
+    PLUS            reduce using rule 16 (expression -> expression DIVIDE expression .)
+    TIMES           reduce using rule 16 (expression -> expression DIVIDE expression .)
+    AND             reduce using rule 16 (expression -> expression DIVIDE expression .)
+    OR              reduce using rule 16 (expression -> expression DIVIDE expression .)
+    GREATER         reduce using rule 16 (expression -> expression DIVIDE expression .)
+    LESS            reduce using rule 16 (expression -> expression DIVIDE expression .)
+    EQUALS          reduce using rule 16 (expression -> expression DIVIDE expression .)
+    NOTEQUALS       reduce using rule 16 (expression -> expression DIVIDE expression .)
+    SEMICOLON       reduce using rule 16 (expression -> expression DIVIDE expression .)
 
-  ! MINUS           [ reduce using rule 24 (expression -> expression LESS expression .) ]
-  ! DIVIDE          [ reduce using rule 24 (expression -> expression LESS expression .) ]
-  ! PLUS            [ reduce using rule 24 (expression -> expression LESS expression .) ]
-  ! TIMES           [ reduce using rule 24 (expression -> expression LESS expression .) ]
-  ! AND             [ shift and go to state 38 ]
-  ! OR              [ shift and go to state 39 ]
-  ! GREATER         [ shift and go to state 40 ]
-  ! LESS            [ shift and go to state 41 ]
+  ! MINUS           [ shift and go to state 37 ]
+  ! DIVIDE          [ shift and go to state 38 ]
+  ! PLUS            [ shift and go to state 39 ]
+  ! TIMES           [ shift and go to state 40 ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
 
 
 state 54
 
-    (11) statement -> NAME EQUALS SCAN LPAREN RPAREN .
+    (17) expression -> expression PLUS expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
 
-    SEMICOLON       reduce using rule 11 (statement -> NAME EQUALS SCAN LPAREN RPAREN .)
+    RPAREN          reduce using rule 17 (expression -> expression PLUS expression .)
+    MINUS           reduce using rule 17 (expression -> expression PLUS expression .)
+    PLUS            reduce using rule 17 (expression -> expression PLUS expression .)
+    AND             reduce using rule 17 (expression -> expression PLUS expression .)
+    OR              reduce using rule 17 (expression -> expression PLUS expression .)
+    GREATER         reduce using rule 17 (expression -> expression PLUS expression .)
+    LESS            reduce using rule 17 (expression -> expression PLUS expression .)
+    EQUALS          reduce using rule 17 (expression -> expression PLUS expression .)
+    NOTEQUALS       reduce using rule 17 (expression -> expression PLUS expression .)
+    SEMICOLON       reduce using rule 17 (expression -> expression PLUS expression .)
+    DIVIDE          shift and go to state 38
+    TIMES           shift and go to state 40
+
+  ! DIVIDE          [ reduce using rule 17 (expression -> expression PLUS expression .) ]
+  ! TIMES           [ reduce using rule 17 (expression -> expression PLUS expression .) ]
+  ! MINUS           [ shift and go to state 37 ]
+  ! PLUS            [ shift and go to state 39 ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 55
+
+    (18) expression -> expression TIMES expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          reduce using rule 18 (expression -> expression TIMES expression .)
+    MINUS           reduce using rule 18 (expression -> expression TIMES expression .)
+    DIVIDE          reduce using rule 18 (expression -> expression TIMES expression .)
+    PLUS            reduce using rule 18 (expression -> expression TIMES expression .)
+    TIMES           reduce using rule 18 (expression -> expression TIMES expression .)
+    AND             reduce using rule 18 (expression -> expression TIMES expression .)
+    OR              reduce using rule 18 (expression -> expression TIMES expression .)
+    GREATER         reduce using rule 18 (expression -> expression TIMES expression .)
+    LESS            reduce using rule 18 (expression -> expression TIMES expression .)
+    EQUALS          reduce using rule 18 (expression -> expression TIMES expression .)
+    NOTEQUALS       reduce using rule 18 (expression -> expression TIMES expression .)
+    SEMICOLON       reduce using rule 18 (expression -> expression TIMES expression .)
+
+  ! MINUS           [ shift and go to state 37 ]
+  ! DIVIDE          [ shift and go to state 38 ]
+  ! PLUS            [ shift and go to state 39 ]
+  ! TIMES           [ shift and go to state 40 ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 56
+
+    (23) expression -> expression AND expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          reduce using rule 23 (expression -> expression AND expression .)
+    AND             reduce using rule 23 (expression -> expression AND expression .)
+    OR              reduce using rule 23 (expression -> expression AND expression .)
+    EQUALS          reduce using rule 23 (expression -> expression AND expression .)
+    NOTEQUALS       reduce using rule 23 (expression -> expression AND expression .)
+    SEMICOLON       reduce using rule 23 (expression -> expression AND expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+
+  ! MINUS           [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! DIVIDE          [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! PLUS            [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! TIMES           [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! GREATER         [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! LESS            [ reduce using rule 23 (expression -> expression AND expression .) ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 57
+
+    (24) expression -> expression OR expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          reduce using rule 24 (expression -> expression OR expression .)
+    AND             reduce using rule 24 (expression -> expression OR expression .)
+    OR              reduce using rule 24 (expression -> expression OR expression .)
+    EQUALS          reduce using rule 24 (expression -> expression OR expression .)
+    NOTEQUALS       reduce using rule 24 (expression -> expression OR expression .)
+    SEMICOLON       reduce using rule 24 (expression -> expression OR expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+
+  ! MINUS           [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! DIVIDE          [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! PLUS            [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! TIMES           [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! GREATER         [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! LESS            [ reduce using rule 24 (expression -> expression OR expression .) ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 58
+
+    (25) expression -> expression GREATER expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          reduce using rule 25 (expression -> expression GREATER expression .)
+    AND             reduce using rule 25 (expression -> expression GREATER expression .)
+    OR              reduce using rule 25 (expression -> expression GREATER expression .)
+    GREATER         reduce using rule 25 (expression -> expression GREATER expression .)
+    LESS            reduce using rule 25 (expression -> expression GREATER expression .)
+    EQUALS          reduce using rule 25 (expression -> expression GREATER expression .)
+    NOTEQUALS       reduce using rule 25 (expression -> expression GREATER expression .)
+    SEMICOLON       reduce using rule 25 (expression -> expression GREATER expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+
+  ! MINUS           [ reduce using rule 25 (expression -> expression GREATER expression .) ]
+  ! DIVIDE          [ reduce using rule 25 (expression -> expression GREATER expression .) ]
+  ! PLUS            [ reduce using rule 25 (expression -> expression GREATER expression .) ]
+  ! TIMES           [ reduce using rule 25 (expression -> expression GREATER expression .) ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 59
+
+    (26) expression -> expression LESS expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+    RPAREN          reduce using rule 26 (expression -> expression LESS expression .)
+    AND             reduce using rule 26 (expression -> expression LESS expression .)
+    OR              reduce using rule 26 (expression -> expression LESS expression .)
+    GREATER         reduce using rule 26 (expression -> expression LESS expression .)
+    LESS            reduce using rule 26 (expression -> expression LESS expression .)
+    EQUALS          reduce using rule 26 (expression -> expression LESS expression .)
+    NOTEQUALS       reduce using rule 26 (expression -> expression LESS expression .)
+    SEMICOLON       reduce using rule 26 (expression -> expression LESS expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+
+  ! MINUS           [ reduce using rule 26 (expression -> expression LESS expression .) ]
+  ! DIVIDE          [ reduce using rule 26 (expression -> expression LESS expression .) ]
+  ! PLUS            [ reduce using rule 26 (expression -> expression LESS expression .) ]
+  ! TIMES           [ reduce using rule 26 (expression -> expression LESS expression .) ]
+  ! AND             [ shift and go to state 41 ]
+  ! OR              [ shift and go to state 42 ]
+  ! GREATER         [ shift and go to state 43 ]
+  ! LESS            [ shift and go to state 44 ]
+  ! EQUALS          [ shift and go to state 45 ]
+  ! NOTEQUALS       [ shift and go to state 46 ]
+
+
+state 60
+
+    (27) expression -> expression EQUALS expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for NOTEQUALS resolved as shift
+    RPAREN          reduce using rule 27 (expression -> expression EQUALS expression .)
+    SEMICOLON       reduce using rule 27 (expression -> expression EQUALS expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
+
+  ! MINUS           [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! DIVIDE          [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! PLUS            [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! TIMES           [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! AND             [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! OR              [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! GREATER         [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! LESS            [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! EQUALS          [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+  ! NOTEQUALS       [ reduce using rule 27 (expression -> expression EQUALS expression .) ]
+
+
+state 61
+
+    (28) expression -> expression NOTEQUALS expression .
+    (15) expression -> expression . MINUS expression
+    (16) expression -> expression . DIVIDE expression
+    (17) expression -> expression . PLUS expression
+    (18) expression -> expression . TIMES expression
+    (23) expression -> expression . AND expression
+    (24) expression -> expression . OR expression
+    (25) expression -> expression . GREATER expression
+    (26) expression -> expression . LESS expression
+    (27) expression -> expression . EQUALS expression
+    (28) expression -> expression . NOTEQUALS expression
+
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for TIMES resolved as shift
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+  ! shift/reduce conflict for GREATER resolved as shift
+  ! shift/reduce conflict for LESS resolved as shift
+  ! shift/reduce conflict for EQUALS resolved as shift
+  ! shift/reduce conflict for NOTEQUALS resolved as shift
+    RPAREN          reduce using rule 28 (expression -> expression NOTEQUALS expression .)
+    SEMICOLON       reduce using rule 28 (expression -> expression NOTEQUALS expression .)
+    MINUS           shift and go to state 37
+    DIVIDE          shift and go to state 38
+    PLUS            shift and go to state 39
+    TIMES           shift and go to state 40
+    AND             shift and go to state 41
+    OR              shift and go to state 42
+    GREATER         shift and go to state 43
+    LESS            shift and go to state 44
+    EQUALS          shift and go to state 45
+    NOTEQUALS       shift and go to state 46
+
+  ! MINUS           [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! DIVIDE          [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! PLUS            [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! TIMES           [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! AND             [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! OR              [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! GREATER         [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! LESS            [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! EQUALS          [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+  ! NOTEQUALS       [ reduce using rule 28 (expression -> expression NOTEQUALS expression .) ]
+
+
+state 62
+
+    (10) statement -> IF LPAREN expression RPAREN LBRACKET . bloc RBRACKET
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET . bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (2) bloc -> . bloc statement SEMICOLON
+    (3) bloc -> . statement SEMICOLON
+    (4) bloc -> . bloc SIMPLE_COMMENT
+    (5) bloc -> . SIMPLE_COMMENT
+    (6) bloc -> . bloc MULTI_COMMENT
+    (7) bloc -> . MULTI_COMMENT
+    (8) statement -> . PRINT LPAREN expression RPAREN
+    (9) statement -> . PRINT LPAREN STRING RPAREN
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
+
+    SIMPLE_COMMENT  shift and go to state 4
+    MULTI_COMMENT   shift and go to state 5
+    PRINT           shift and go to state 6
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
+
+    bloc                           shift and go to state 64
+    statement                      shift and go to state 3
+
+state 63
+
+    (13) statement -> NAME ASSIGN SCAN LPAREN RPAREN .
+
+    SEMICOLON       reduce using rule 13 (statement -> NAME ASSIGN SCAN LPAREN RPAREN .)
+
+
+state 64
+
+    (10) statement -> IF LPAREN expression RPAREN LBRACKET bloc . RBRACKET
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc . RBRACKET ELSE LBRACKET bloc RBRACKET
+    (2) bloc -> bloc . statement SEMICOLON
+    (4) bloc -> bloc . SIMPLE_COMMENT
+    (6) bloc -> bloc . MULTI_COMMENT
+    (8) statement -> . PRINT LPAREN expression RPAREN
+    (9) statement -> . PRINT LPAREN STRING RPAREN
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
+
+    RBRACKET        shift and go to state 65
+    SIMPLE_COMMENT  shift and go to state 11
+    MULTI_COMMENT   shift and go to state 12
+    PRINT           shift and go to state 6
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
+
+    statement                      shift and go to state 10
+
+state 65
+
+    (10) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET .
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET . ELSE LBRACKET bloc RBRACKET
+
+    SEMICOLON       reduce using rule 10 (statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET .)
+    ELSE            shift and go to state 66
+
+
+state 66
+
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE . LBRACKET bloc RBRACKET
+
+    LBRACKET        shift and go to state 67
+
+
+state 67
+
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET . bloc RBRACKET
+    (2) bloc -> . bloc statement SEMICOLON
+    (3) bloc -> . statement SEMICOLON
+    (4) bloc -> . bloc SIMPLE_COMMENT
+    (5) bloc -> . SIMPLE_COMMENT
+    (6) bloc -> . bloc MULTI_COMMENT
+    (7) bloc -> . MULTI_COMMENT
+    (8) statement -> . PRINT LPAREN expression RPAREN
+    (9) statement -> . PRINT LPAREN STRING RPAREN
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
+
+    SIMPLE_COMMENT  shift and go to state 4
+    MULTI_COMMENT   shift and go to state 5
+    PRINT           shift and go to state 6
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
+
+    bloc                           shift and go to state 68
+    statement                      shift and go to state 3
+
+state 68
+
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc . RBRACKET
+    (2) bloc -> bloc . statement SEMICOLON
+    (4) bloc -> bloc . SIMPLE_COMMENT
+    (6) bloc -> bloc . MULTI_COMMENT
+    (8) statement -> . PRINT LPAREN expression RPAREN
+    (9) statement -> . PRINT LPAREN STRING RPAREN
+    (10) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
+    (11) statement -> . IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET
+    (12) statement -> . TOAMSCAN LPAREN NAME RPAREN
+    (13) statement -> . NAME ASSIGN SCAN LPAREN RPAREN
+    (14) statement -> . NAME ASSIGN expression
+    (29) statement -> . NAME INCREMENT
+    (30) statement -> . NAME DECREMENT
+    (31) statement -> . NAME INCREASE expression
+    (32) statement -> . NAME DECREASE expression
+
+    RBRACKET        shift and go to state 69
+    SIMPLE_COMMENT  shift and go to state 11
+    MULTI_COMMENT   shift and go to state 12
+    PRINT           shift and go to state 6
+    IF              shift and go to state 7
+    TOAMSCAN        shift and go to state 8
+    NAME            shift and go to state 9
+
+    statement                      shift and go to state 10
+
+state 69
+
+    (11) statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET .
+
+    SEMICOLON       reduce using rule 11 (statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
-WARNING: shift/reduce conflict for RPAREN in state 23 resolved as shift
+WARNING: shift/reduce conflict for RPAREN in state 25 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 60 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 60 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 60 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 60 resolved as shift
+WARNING: shift/reduce conflict for AND in state 60 resolved as shift
+WARNING: shift/reduce conflict for OR in state 60 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 60 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 60 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 60 resolved as shift
+WARNING: shift/reduce conflict for NOTEQUALS in state 60 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 61 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 61 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 61 resolved as shift
+WARNING: shift/reduce conflict for TIMES in state 61 resolved as shift
+WARNING: shift/reduce conflict for AND in state 61 resolved as shift
+WARNING: shift/reduce conflict for OR in state 61 resolved as shift
+WARNING: shift/reduce conflict for GREATER in state 61 resolved as shift
+WARNING: shift/reduce conflict for LESS in state 61 resolved as shift
+WARNING: shift/reduce conflict for EQUALS in state 61 resolved as shift
+WARNING: shift/reduce conflict for NOTEQUALS in state 61 resolved as shift

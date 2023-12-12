@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftANDORnonassocGREATERLESSleftPLUSMINUSleftTIMESDIVIDEAND DECREASE DECREMENT DIVIDE EQUALS GREATER INCREASE INCREMENT LESS LPAREN MINUS MULTI_COMMENT NAME NUMBER OR PLUS PRINT RPAREN SCAN SEMICOLON SIMPLE_COMMENT STRING TIMES TOAMSCANstart : blocbloc : bloc statement SEMICOLON\n            | statement SEMICOLON\n            | bloc SIMPLE_COMMENT\n            | SIMPLE_COMMENT\n            | bloc MULTI_COMMENT\n            | MULTI_COMMENTstatement : PRINT LPAREN expression RPAREN\n        | PRINT LPAREN STRING RPARENstatement : TOAMSCAN LPAREN NAME RPARENstatement : NAME EQUALS SCAN LPAREN RPARENstatement : NAME EQUALS expressionexpression : expression MINUS expression\n\t\t\t\t| expression DIVIDE expression\n\t\t\t\t| expression PLUS expression\n\t\t\t\t| expression TIMES expressionexpression : LPAREN expression RPARENexpression : NUMBERexpression : NAMEexpression : STRINGexpression : expression AND expression\n                | expression OR expression\n                | expression GREATER expression\n                | expression LESS expressionstatement : NAME INCREMENT\n                | NAME DECREMENT\n                | NAME INCREASE expression\n                | NAME DECREASE expression'
+_lr_signature = 'leftANDORnonassocGREATERLESSleftPLUSMINUSleftTIMESDIVIDEAND ASSIGN DECREASE DECREMENT DIVIDE ELSE ELSEIF EQUALS GREATER IF INCREASE INCREMENT LBRACKET LESS LPAREN MINUS MULTI_COMMENT NAME NOTEQUALS NUMBER OR PLUS PRINT RBRACKET RPAREN SCAN SEMICOLON SIMPLE_COMMENT STRING TIMES TOAMSCANstart : blocbloc : bloc statement SEMICOLON\n            | statement SEMICOLON\n            | bloc SIMPLE_COMMENT\n            | SIMPLE_COMMENT\n            | bloc MULTI_COMMENT\n            | MULTI_COMMENTstatement : PRINT LPAREN expression RPAREN\n        | PRINT LPAREN STRING RPARENstatement : IF LPAREN expression RPAREN LBRACKET bloc RBRACKET\n        | IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKETstatement : TOAMSCAN LPAREN NAME RPARENstatement : NAME ASSIGN SCAN LPAREN RPARENstatement : NAME ASSIGN expressionexpression : expression MINUS expression\n\t\t\t\t| expression DIVIDE expression\n\t\t\t\t| expression PLUS expression\n\t\t\t\t| expression TIMES expressionexpression : LPAREN expression RPARENexpression : NUMBERexpression : NAMEexpression : STRINGexpression : expression AND expression\n                | expression OR expression\n                | expression GREATER expression\n                | expression LESS expression\n                | expression EQUALS expression\n                | expression NOTEQUALS expressionstatement : NAME INCREMENT\n                | NAME DECREMENT\n                | NAME INCREASE expression\n                | NAME DECREASE expression'
     
-_lr_action_items = {'SIMPLE_COMMENT':([0,2,4,5,10,11,12,20,],[4,10,-5,-7,-4,-6,-3,-2,]),'MULTI_COMMENT':([0,2,4,5,10,11,12,20,],[5,11,-5,-7,-4,-6,-3,-2,]),'PRINT':([0,2,4,5,10,11,12,20,],[6,6,-5,-7,-4,-6,-3,-2,]),'TOAMSCAN':([0,2,4,5,10,11,12,20,],[7,7,-5,-7,-4,-6,-3,-2,]),'NAME':([0,2,4,5,10,11,12,13,14,15,18,19,20,21,34,35,36,37,38,39,40,41,],[8,8,-5,-7,-4,-6,-3,25,26,25,25,25,-2,25,25,25,25,25,25,25,25,25,]),'$end':([1,2,4,5,10,11,12,20,],[0,-1,-5,-7,-4,-6,-3,-2,]),'SEMICOLON':([3,9,16,17,24,25,28,29,30,31,33,42,43,45,46,47,48,49,50,51,52,53,54,],[12,20,-25,-26,-18,-19,-12,-20,-27,-28,-8,-9,-10,-17,-13,-14,-15,-16,-21,-22,-23,-24,-11,]),'LPAREN':([6,7,13,15,18,19,21,27,34,35,36,37,38,39,40,41,],[13,14,21,21,21,21,21,44,21,21,21,21,21,21,21,21,]),'EQUALS':([8,],[15,]),'INCREMENT':([8,],[16,]),'DECREMENT':([8,],[17,]),'INCREASE':([8,],[18,]),'DECREASE':([8,],[19,]),'STRING':([13,15,18,19,21,34,35,36,37,38,39,40,41,],[23,29,29,29,29,29,29,29,29,29,29,29,29,]),'NUMBER':([13,15,18,19,21,34,35,36,37,38,39,40,41,],[24,24,24,24,24,24,24,24,24,24,24,24,24,]),'SCAN':([15,],[27,]),'RPAREN':([22,23,24,25,26,29,32,44,45,46,47,48,49,50,51,52,53,],[33,42,-18,-19,43,-20,45,54,-17,-13,-14,-15,-16,-21,-22,-23,-24,]),'MINUS':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[34,-20,-18,-19,34,-20,34,34,34,-17,-13,-14,-15,-16,34,34,34,34,]),'DIVIDE':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[35,-20,-18,-19,35,-20,35,35,35,-17,35,-14,35,-16,35,35,35,35,]),'PLUS':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[36,-20,-18,-19,36,-20,36,36,36,-17,-13,-14,-15,-16,36,36,36,36,]),'TIMES':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[37,-20,-18,-19,37,-20,37,37,37,-17,37,-14,37,-16,37,37,37,37,]),'AND':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[38,-20,-18,-19,38,-20,38,38,38,-17,-13,-14,-15,-16,-21,-22,-23,-24,]),'OR':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[39,-20,-18,-19,39,-20,39,39,39,-17,-13,-14,-15,-16,-21,-22,-23,-24,]),'GREATER':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[40,-20,-18,-19,40,-20,40,40,40,-17,-13,-14,-15,-16,40,40,None,None,]),'LESS':([22,23,24,25,28,29,30,31,32,45,46,47,48,49,50,51,52,53,],[41,-20,-18,-19,41,-20,41,41,41,-17,-13,-14,-15,-16,41,41,None,None,]),}
+_lr_action_items = {'SIMPLE_COMMENT':([0,2,4,5,11,12,13,22,62,64,67,68,],[4,11,-5,-7,-4,-6,-3,-2,4,11,4,11,]),'MULTI_COMMENT':([0,2,4,5,11,12,13,22,62,64,67,68,],[5,12,-5,-7,-4,-6,-3,-2,5,12,5,12,]),'PRINT':([0,2,4,5,11,12,13,22,62,64,67,68,],[6,6,-5,-7,-4,-6,-3,-2,6,6,6,6,]),'IF':([0,2,4,5,11,12,13,22,62,64,67,68,],[7,7,-5,-7,-4,-6,-3,-2,7,7,7,7,]),'TOAMSCAN':([0,2,4,5,11,12,13,22,62,64,67,68,],[8,8,-5,-7,-4,-6,-3,-2,8,8,8,8,]),'NAME':([0,2,4,5,11,12,13,14,15,16,17,20,21,22,23,37,38,39,40,41,42,43,44,45,46,62,64,67,68,],[9,9,-5,-7,-4,-6,-3,27,27,30,27,27,27,-2,27,27,27,27,27,27,27,27,27,27,27,9,9,9,9,]),'$end':([1,2,4,5,11,12,13,22,],[0,-1,-5,-7,-4,-6,-3,-2,]),'SEMICOLON':([3,10,18,19,26,27,29,32,33,34,36,47,49,51,52,53,54,55,56,57,58,59,60,61,63,65,69,],[13,22,-29,-30,-20,-21,-22,-14,-31,-32,-8,-9,-12,-19,-15,-16,-17,-18,-23,-24,-25,-26,-27,-28,-13,-10,-11,]),'RBRACKET':([4,5,11,12,13,22,64,68,],[-5,-7,-4,-6,-3,-2,65,69,]),'LPAREN':([6,7,8,14,15,17,20,21,23,31,37,38,39,40,41,42,43,44,45,46,],[14,15,16,23,23,23,23,23,23,50,23,23,23,23,23,23,23,23,23,23,]),'ASSIGN':([9,],[17,]),'INCREMENT':([9,],[18,]),'DECREMENT':([9,],[19,]),'INCREASE':([9,],[20,]),'DECREASE':([9,],[21,]),'STRING':([14,15,17,20,21,23,37,38,39,40,41,42,43,44,45,46,],[25,29,29,29,29,29,29,29,29,29,29,29,29,29,29,29,]),'NUMBER':([14,15,17,20,21,23,37,38,39,40,41,42,43,44,45,46,],[26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,26,]),'SCAN':([17,],[31,]),'RPAREN':([24,25,26,27,28,29,30,35,50,51,52,53,54,55,56,57,58,59,60,61,],[36,47,-20,-21,48,-22,49,51,63,-19,-15,-16,-17,-18,-23,-24,-25,-26,-27,-28,]),'MINUS':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[37,-22,-20,-21,37,-22,37,37,37,37,-19,-15,-16,-17,-18,37,37,37,37,37,37,]),'DIVIDE':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[38,-22,-20,-21,38,-22,38,38,38,38,-19,38,-16,38,-18,38,38,38,38,38,38,]),'PLUS':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[39,-22,-20,-21,39,-22,39,39,39,39,-19,-15,-16,-17,-18,39,39,39,39,39,39,]),'TIMES':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[40,-22,-20,-21,40,-22,40,40,40,40,-19,40,-16,40,-18,40,40,40,40,40,40,]),'AND':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[41,-22,-20,-21,41,-22,41,41,41,41,-19,-15,-16,-17,-18,-23,-24,-25,-26,41,41,]),'OR':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[42,-22,-20,-21,42,-22,42,42,42,42,-19,-15,-16,-17,-18,-23,-24,-25,-26,42,42,]),'GREATER':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[43,-22,-20,-21,43,-22,43,43,43,43,-19,-15,-16,-17,-18,43,43,None,None,43,43,]),'LESS':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[44,-22,-20,-21,44,-22,44,44,44,44,-19,-15,-16,-17,-18,44,44,None,None,44,44,]),'EQUALS':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[45,-22,-20,-21,45,-22,45,45,45,45,-19,-15,-16,-17,-18,-23,-24,-25,-26,45,45,]),'NOTEQUALS':([24,25,26,27,28,29,32,33,34,35,51,52,53,54,55,56,57,58,59,60,61,],[46,-22,-20,-21,46,-22,46,46,46,46,-19,-15,-16,-17,-18,-23,-24,-25,-26,46,46,]),'LBRACKET':([48,66,],[62,67,]),'ELSE':([65,],[66,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'start':([0,],[1,]),'bloc':([0,],[2,]),'statement':([0,2,],[3,9,]),'expression':([13,15,18,19,21,34,35,36,37,38,39,40,41,],[22,28,30,31,32,46,47,48,49,50,51,52,53,]),}
+_lr_goto_items = {'start':([0,],[1,]),'bloc':([0,62,67,],[2,64,68,]),'statement':([0,2,62,64,67,68,],[3,10,3,10,3,10,]),'expression':([14,15,17,20,21,23,37,38,39,40,41,42,43,44,45,46,],[24,28,32,33,34,35,52,53,54,55,56,57,58,59,60,61,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,32 +27,36 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> start","S'",1,None,None,None),
-  ('start -> bloc','start',1,'p_start','interpreter.py',91),
-  ('bloc -> bloc statement SEMICOLON','bloc',3,'p_bloc','interpreter.py',99),
-  ('bloc -> statement SEMICOLON','bloc',2,'p_bloc','interpreter.py',100),
-  ('bloc -> bloc SIMPLE_COMMENT','bloc',2,'p_bloc','interpreter.py',101),
-  ('bloc -> SIMPLE_COMMENT','bloc',1,'p_bloc','interpreter.py',102),
-  ('bloc -> bloc MULTI_COMMENT','bloc',2,'p_bloc','interpreter.py',103),
-  ('bloc -> MULTI_COMMENT','bloc',1,'p_bloc','interpreter.py',104),
-  ('statement -> PRINT LPAREN expression RPAREN','statement',4,'p_statement_expr','interpreter.py',114),
-  ('statement -> PRINT LPAREN STRING RPAREN','statement',4,'p_statement_expr','interpreter.py',115),
-  ('statement -> TOAMSCAN LPAREN NAME RPAREN','statement',4,'p_statement_toamScan','interpreter.py',120),
-  ('statement -> NAME EQUALS SCAN LPAREN RPAREN','statement',5,'p_statement_scan','interpreter.py',125),
-  ('statement -> NAME EQUALS expression','statement',3,'p_statement_assign','interpreter.py',130),
-  ('expression -> expression MINUS expression','expression',3,'p_expression_binop_operations','interpreter.py',135),
-  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop_operations','interpreter.py',136),
-  ('expression -> expression PLUS expression','expression',3,'p_expression_binop_operations','interpreter.py',137),
-  ('expression -> expression TIMES expression','expression',3,'p_expression_binop_operations','interpreter.py',138),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','interpreter.py',143),
-  ('expression -> NUMBER','expression',1,'p_expression_number','interpreter.py',148),
-  ('expression -> NAME','expression',1,'p_expression_name','interpreter.py',153),
-  ('expression -> STRING','expression',1,'p_expression_string','interpreter.py',159),
-  ('expression -> expression AND expression','expression',3,'p_expression_binop_bool','interpreter.py',164),
-  ('expression -> expression OR expression','expression',3,'p_expression_binop_bool','interpreter.py',165),
-  ('expression -> expression GREATER expression','expression',3,'p_expression_binop_bool','interpreter.py',166),
-  ('expression -> expression LESS expression','expression',3,'p_expression_binop_bool','interpreter.py',167),
-  ('statement -> NAME INCREMENT','statement',2,'p_expression_incr_decr','interpreter.py',172),
-  ('statement -> NAME DECREMENT','statement',2,'p_expression_incr_decr','interpreter.py',173),
-  ('statement -> NAME INCREASE expression','statement',3,'p_expression_incr_decr','interpreter.py',174),
-  ('statement -> NAME DECREASE expression','statement',3,'p_expression_incr_decr','interpreter.py',175),
+  ('start -> bloc','start',1,'p_start','interpreter.py',99),
+  ('bloc -> bloc statement SEMICOLON','bloc',3,'p_bloc','interpreter.py',107),
+  ('bloc -> statement SEMICOLON','bloc',2,'p_bloc','interpreter.py',108),
+  ('bloc -> bloc SIMPLE_COMMENT','bloc',2,'p_bloc','interpreter.py',109),
+  ('bloc -> SIMPLE_COMMENT','bloc',1,'p_bloc','interpreter.py',110),
+  ('bloc -> bloc MULTI_COMMENT','bloc',2,'p_bloc','interpreter.py',111),
+  ('bloc -> MULTI_COMMENT','bloc',1,'p_bloc','interpreter.py',112),
+  ('statement -> PRINT LPAREN expression RPAREN','statement',4,'p_statement_expr','interpreter.py',122),
+  ('statement -> PRINT LPAREN STRING RPAREN','statement',4,'p_statement_expr','interpreter.py',123),
+  ('statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET','statement',7,'p_statement_if','interpreter.py',128),
+  ('statement -> IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET','statement',11,'p_statement_if','interpreter.py',129),
+  ('statement -> TOAMSCAN LPAREN NAME RPAREN','statement',4,'p_statement_toamScan','interpreter.py',137),
+  ('statement -> NAME ASSIGN SCAN LPAREN RPAREN','statement',5,'p_statement_scan','interpreter.py',142),
+  ('statement -> NAME ASSIGN expression','statement',3,'p_statement_assign','interpreter.py',147),
+  ('expression -> expression MINUS expression','expression',3,'p_expression_binop_operations','interpreter.py',152),
+  ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop_operations','interpreter.py',153),
+  ('expression -> expression PLUS expression','expression',3,'p_expression_binop_operations','interpreter.py',154),
+  ('expression -> expression TIMES expression','expression',3,'p_expression_binop_operations','interpreter.py',155),
+  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_group','interpreter.py',160),
+  ('expression -> NUMBER','expression',1,'p_expression_number','interpreter.py',165),
+  ('expression -> NAME','expression',1,'p_expression_name','interpreter.py',170),
+  ('expression -> STRING','expression',1,'p_expression_string','interpreter.py',176),
+  ('expression -> expression AND expression','expression',3,'p_expression_binop_bool','interpreter.py',181),
+  ('expression -> expression OR expression','expression',3,'p_expression_binop_bool','interpreter.py',182),
+  ('expression -> expression GREATER expression','expression',3,'p_expression_binop_bool','interpreter.py',183),
+  ('expression -> expression LESS expression','expression',3,'p_expression_binop_bool','interpreter.py',184),
+  ('expression -> expression EQUALS expression','expression',3,'p_expression_binop_bool','interpreter.py',185),
+  ('expression -> expression NOTEQUALS expression','expression',3,'p_expression_binop_bool','interpreter.py',186),
+  ('statement -> NAME INCREMENT','statement',2,'p_expression_incr_decr','interpreter.py',191),
+  ('statement -> NAME DECREMENT','statement',2,'p_expression_incr_decr','interpreter.py',192),
+  ('statement -> NAME INCREASE expression','statement',3,'p_expression_incr_decr','interpreter.py',193),
+  ('statement -> NAME DECREASE expression','statement',3,'p_expression_incr_decr','interpreter.py',194),
 ]
