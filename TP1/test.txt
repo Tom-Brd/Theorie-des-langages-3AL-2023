@@ -15,3 +15,5 @@ sur plusieurs lignes */
 // ceci en est un autre
 
 print(x);
+x += 2;
+print(x);

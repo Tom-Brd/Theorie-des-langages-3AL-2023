@@ -7,7 +7,6 @@ from TP2.genereTreeGraphviz2 import printTreeGraph
 
 reserved = {
     'print': 'PRINT',
-    'printString': 'PRINTSTRING',
     'toamScan': 'TOAMSCAN',
     'scan': 'SCAN'
 }
@@ -17,7 +16,7 @@ tokens = [
              'PLUS', 'TIMES', 'DIVIDE',
              'LPAREN', 'RPAREN', 'AND', 'OR', 'SEMICOLON', 'NAME', 'EQUALS', 'GREATER', 'LESS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
-             "STRING", "SIMPLE_COMMENT", "MULTI_COMMENT"
+             "STRING", "SIMPLE_COMMENT", "MULTI_COMMENT",
          ] + list(reserved.values())
 
 # Tokens
@@ -97,21 +96,23 @@ def p_start(p):
 
 
 def p_bloc(p):
-    '''bloc : statement SEMICOLON bloc
+    '''bloc : bloc statement SEMICOLON
             | statement SEMICOLON
-            | SIMPLE_COMMENT bloc
+            | bloc SIMPLE_COMMENT
             | SIMPLE_COMMENT
-            | MULTI_COMMENT bloc
+            | bloc MULTI_COMMENT
             | MULTI_COMMENT'''
     if len(p) == 4:
-        p[0] = ('bloc', p[3], p[1])
+        p[0] = ('bloc', p[1], p[2])
     else:
-        p[0] = ('bloc', p[1], 'empty')
-
+        if p[1] == '//' or p[1] == '/*':
+            p[0] = p[0]
+        else:
+            p[0] = ('bloc', p[1], 'empty')
 
 def p_statement_expr(p):
     '''statement : PRINT LPAREN expression RPAREN
-        | PRINTSTRING LPAREN STRING RPAREN'''
+        | PRINT LPAREN STRING RPAREN'''
     p[0] = ('print', p[3])
 
 
@@ -168,7 +169,7 @@ def p_expression_binop_bool(p):
 
 
 def p_expression_incr_decr(p):
-    '''expression : NAME INCREMENT
+    '''statement : NAME INCREMENT
                 | NAME DECREMENT
                 | NAME INCREASE expression
                 | NAME DECREASE expression'''
@@ -188,26 +189,30 @@ def p_error(p):
 
 
 def evalExpr(t):
-    print('eval de ', t)
+    # print('eval de ', t)
+    if type(t) is str: return names[t]
     if type(t) is int: return t
     if type(t) is tuple:
         match t[0]:
             case '+':
-                return eval(t[1]) + eval(t[2])
+                return evalExpr(t[1]) + evalExpr(t[2])
             case '*':
-                return eval(t[1]) * eval(t[2])
+                return evalExpr(t[1]) * evalExpr(t[2])
             case '-':
-                return eval(t[1]) - eval(t[2])
+                return evalExpr(t[1]) - evalExpr(t[2])
             case '/':
-                return eval(t[1]) / eval(t[2])
+                if t[2] == 0:
+                    print("TOAM ERROR : Division par 0 impossible")
+                    exit(1)
+                return evalExpr(t[1]) / evalExpr(t[2])
             case '&':
-                return eval(t[1]) & eval(t[2])
+                return evalExpr(t[1]) & evalExpr(t[2])
             case '|':
-                return eval(t[1]) | eval(t[2])
+                return evalExpr(t[1]) | evalExpr(t[2])
             case '>':
-                return eval(t[1]) > eval(t[2])
+                return evalExpr(t[1]) > evalExpr(t[2])
             case '<':
-                return eval(t[1]) < eval(t[2])
+                return evalExpr(t[1]) < evalExpr(t[2])
             case _:
                 return
     return 'UNK'
@@ -219,9 +224,13 @@ def evalInst(t):
             case 'assign':
                 names[t[1]] = evalExpr(t[2])
             case 'print':
-                print(evalExpr(t[1]))
-            case 'printString':
-                print(t[1])
+                if type(t[1]) is str:
+                    if t[1] in names:
+                        print("TOAM PRINT : ", names[t[1]])
+                    else:
+                        print("TOAM PRINT : ", t[1])
+                else:
+                    print("TOAM PRINT : ", evalExpr(t[1]))
             case 'scan':
                 names[t[1]] = input()
             case 'bloc':
