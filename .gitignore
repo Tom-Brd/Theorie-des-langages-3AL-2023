@@ -3,3 +3,4 @@ Digraph.gv.pdf
 .idea/
 parser.out
 parsetab.py
+__pycache__
