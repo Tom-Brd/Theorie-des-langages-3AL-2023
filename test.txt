@@ -9,6 +9,10 @@ print("CoucouBis");
 /* ceci est un commentaire
 sur plusieurs lignes */
 
+int x = 1;
+print(x);
+
+/*
 x = 5;
 x++;
 print(x);
@@ -37,6 +41,31 @@ if (x == 0) {
     print("x n'est pas égal à 0");
 };
 
-print("Fin du si");
+while (x < 10) {
+    print(x);
+    x++;
+};
 
-print("Fin du programme");
+print("La on print i");
+
+for (i = 0; i < 10; i++) {
+    print(i);
+    if (i == 5) {
+        print("i est égal à 5");
+    } else {
+        print("i n'est pas égal à 5");
+    };
+};
+
+print("La SUITE DE FIBONACCI");
+
+a = 0;
+b = 1;
+
+for (i = 0; i < 10; i++) {
+    print(a);
+    c = a + b;
+    a = b;
+    b = c;
+};
+*/

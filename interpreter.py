@@ -12,6 +12,8 @@ reserved = {
     'if': 'IF',
     'else if': 'ELSEIF',
     'else': 'ELSE',
+    'while': 'WHILE',
+    'for': 'FOR',
 }
 
 tokens = [
@@ -131,6 +133,17 @@ def p_statement_if(p):
         p[0] = ('if', p[3], p[6])
     else:
         p[0] = ('if', p[3], p[6], p[10])
+
+
+def p_statement_while(p):
+    '''statement : WHILE LPAREN expression RPAREN LBRACKET bloc RBRACKET'''
+    p[0] = ('while', p[3], p[6])
+
+
+def p_statement_for(p):
+    '''statement : FOR LPAREN statement SEMICOLON expression SEMICOLON statement RPAREN LBRACKET bloc RBRACKET'''
+    print(p[3], p[5], p[7], p[10])
+    p[0] = ('for', p[3], p[5], p[7], p[10])
 
 
 def p_statement_toamScan(p):
@@ -263,6 +276,14 @@ def evalInst(t):
                 else:
                     if len(t) == 4:
                         evalInst(t[3])
+            case 'while':
+                while evalExpr(t[1]):
+                    evalInst(t[2])
+            case 'for':
+                evalInst(t[1])
+                while evalExpr(t[2]):
+                    evalInst(t[4])
+                    evalInst(t[3])
             case 'bloc':
                 evalInst(t[1])
                 evalInst(t[2])
