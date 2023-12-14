@@ -3,7 +3,7 @@
 #
 # Expressions arithmétiques sans variables
 # -----------------------------------------------------------------------------
-from TP2.genereTreeGraphviz2 import printTreeGraph
+from genereTreeGraphviz2 import printTreeGraph
 
 reserved = {
     'print': 'PRINT',
