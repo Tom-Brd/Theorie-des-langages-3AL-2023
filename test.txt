@@ -9,7 +9,7 @@ print("CoucouBis");
 /* ceci est un commentaire
 sur plusieurs lignes */
 
-int x = 1;
+x = 1;
 print(x);
 
 /*
