@@ -14,6 +14,13 @@ reserved = {
     'else': 'ELSE',
     'while': 'WHILE',
     'for': 'FOR',
+    'int': 'INT',
+    'float': 'FLOAT',
+    'char': 'CHAR',
+    'string': 'STRING',
+    'bool': 'BOOL',
+    'true': 'TRUE',
+    'false': 'FALSE'
 }
 
 tokens = [
@@ -22,7 +29,8 @@ tokens = [
              'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET',
              'AND', 'OR', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS', 'NOTEQUALS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
-             "STRING", "SIMPLE_COMMENT", "MULTI_COMMENT",
+             'TRUE', 'FALSE',
+             "CHARCHAIN", "SIMPLE_COMMENT", "MULTI_COMMENT",
          ] + list(reserved.values())
 
 # Tokens
@@ -62,7 +70,7 @@ def t_NAME(t):
     return t
 
 
-def t_STRING(t):
+def t_CHARCHAIN(t):
     r'\"[\w\W]*?\"'
     t.value = str(t.value)
     return t
@@ -87,21 +95,21 @@ import ply.lex as lex
 
 lex.lex()
 
-names = {}
+def toamPrint(string):
+    print("TOAM PRINT : ", string)
+def debug(string):
+    if DEBUG:
+        print("TOAM DEBUG : ", string)
 
-precedence = (
-    ('left', 'AND', 'OR'),
-    ('nonassoc', 'GREATER', 'LESS'),
-    ('left', 'PLUS', 'MINUS'),
-    ('left', 'TIMES', 'DIVIDE'),
-)
-
+def error(string):
+    print("TOAM ERROR : ", string)
 
 def p_start(p):
     'start : bloc'
     p[0] = ('START', p[1])
     print('Arbre de dérivation = ', p[0])
     printTreeGraph(p[1])
+    evalSyntax(p[1])
     evalInst(p[1])
 
 
@@ -120,9 +128,10 @@ def p_bloc(p):
         else:
             p[0] = ('bloc', p[1], 'empty')
 
+
 def p_statement_expr(p):
     '''statement : PRINT LPAREN expression RPAREN
-        | PRINT LPAREN STRING RPAREN'''
+        | PRINT LPAREN CHARCHAIN RPAREN'''
     p[0] = ('print', p[3])
 
 
@@ -157,8 +166,12 @@ def p_statement_scan(p):
 
 
 def p_statement_assign(p):
-    'statement : NAME ASSIGN expression'
-    p[0] = ('assign', p[1], p[3])
+    '''statement : TYPE NAME ASSIGN expression
+        | NAME ASSIGN expression'''
+    if len(p) == 5:  # type + assign
+        p[0] = ('declare', p[1], p[2], p[4])  # type ; name ; value
+    else:  # re assign
+        p[0] = ('assign', p[1], p[3])  # name ; value
 
 
 def p_expression_binop_operations(p):
@@ -178,6 +191,9 @@ def p_expression_number(p):
     'expression : NUMBER'
     p[0] = p[1]
 
+def p_expression_boolean(p):
+    'expression : BOOLEAN'
+    p[0] = bool(p[1])
 
 def p_expression_name(p):
     'expression : NAME'
@@ -185,8 +201,21 @@ def p_expression_name(p):
     p[0] = p[1]
 
 
-def p_expression_string(p):
-    'expression : STRING'
+def p_type_definition(p):
+    '''TYPE : INT
+            | FLOAT
+            | CHAR
+            | STRING
+            | BOOL'''
+    p[0] = p[1]
+
+def p_boolean_definition(p):
+    '''BOOLEAN : TRUE
+                | FALSE'''
+    p[0] = p[1]
+
+def p_expression_charchain(p):
+    'expression : CHARCHAIN'
     p[0] = p[2]
 
 
@@ -223,7 +252,7 @@ def p_error(p):
 
 def evalExpr(t):
     # print('eval de ', t)
-    if type(t) is str: return names[t]
+    if type(t) is str: return variables[t]
     if type(t) is int: return t
     if type(t) is tuple:
         match t[0]:
@@ -235,8 +264,7 @@ def evalExpr(t):
                 return evalExpr(t[1]) - evalExpr(t[2])
             case '/':
                 if t[2] == 0:
-                    print("TOAM ERROR : Division par 0 impossible")
-                    exit(1)
+                    exit("TOAM ERROR : Division par 0 impossible")
                 return evalExpr(t[1]) / evalExpr(t[2])
             case '&':
                 return evalExpr(t[1]) & evalExpr(t[2])
@@ -255,21 +283,120 @@ def evalExpr(t):
     return 'UNK'
 
 
+def getType(expectedType):
+    match expectedType:
+        case 'int':
+            return int
+        case 'float':
+            return float
+        case 'char':
+            return str
+        case 'string':
+            return str
+        case 'bool':
+            return bool
+
+
+def isTypeCorrect(expectedType, value):
+    return type(value) is getType(expectedType)
+
+
+def evalExprSyntax(t, typeExpected, tempVariables):
+    debug(f"t = {t}")
+    debug(f"typeExpected = {typeExpected}")
+    if type(t) is str:
+        debug("t is a string")
+
+        if t in tempVariables:
+            debug("t is a variable")
+            return getType(tempVariables[t]) is typeExpected
+        else:
+            exit(f"TOAM ERROR : La variable '{t}' n'est pas déclarée")
+    if type(t) is typeExpected:
+        return True
+    if type(t) is tuple:
+        debug(f"t is a tuple : {t}")
+        if t[0] == '/' and t[2] == 0:
+            exit("TOAM ERROR : Division par 0 impossible")
+        return evalExprSyntax(t[1], typeExpected, tempVariables) and evalExprSyntax(t[2], typeExpected, tempVariables)
+    return False
+
+
+knownOperators = ['+', '-', '*', '/', '&&', '||', '>', '<', '==', '!=', '++', '--', '+=', '-=']
+
+
+def evalSyntaxCondition(condition, syntaxVariables):
+    debug("On est passé dans evalSyntaxCondition")
+    debug(f"Condition = {condition}")
+    if type(condition) is tuple:
+        for sub in condition:
+            debug(f"sub = {sub}")
+            if type(sub) is str:
+                debug("sub is str")
+                if sub in knownOperators:
+                    debug("sub is knownOperator")
+                    continue
+                elif sub not in syntaxVariables:
+                    print(syntaxVariables)
+                    exit(f"TOAM ERROR : Variable '{sub}' non déclarée dans la condition")
+            else:
+                debug("sub is not str")
+                return evalSyntaxCondition(sub, syntaxVariables)
+    return True
+
+def evalSyntax(t):
+    if type(t) is tuple:
+        match t[0]:
+            # t[1] = type
+            # t[2] = name
+            # t[3] = value
+            case 'declare':
+                if t[2] in tempVariables:
+                    exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
+                else:
+                    if evalExprSyntax(t[3], getType(t[1]), tempVariables):
+                        tempVariables[t[2]] = t[1]
+                        debug(f"tempVariables = {tempVariables}")
+                    else:
+                        exit(f"TOAM ERROR : Type incorrect dans la déclaration : '{t[1]}'")
+            # t[1] = name
+            # t[2] = value
+            case 'assign':
+                if t[1] in tempVariables:
+                    debug(f"evalExprSyntax : t[2] = {t[2]}")
+                    debug(f"evalExprSyntax : getType(tempVariables[t[1]]) = {getType(tempVariables[t[1]])}")
+                    debug(f"evalExprSyntax : tempVariables = {tempVariables}")
+                    if not evalExprSyntax(t[2], getType(tempVariables[t[1]]), tempVariables):
+                        exit(f"TOAM ERROR : Type incorrect dans l'affectation : {tempVariables[t[1]]}")
+                else:
+                    exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée")
+            case 'while':
+                if evalExprSyntax(evalSyntaxCondition(t[1], tempVariables), bool, tempVariables):
+                    evalSyntax(t[2])
+            case 'bloc':
+                evalSyntax(t[1])
+                evalSyntax(t[2])
+            case 'start':
+                evalSyntax(t[1])
+
+
 def evalInst(t):
     if type(t) is tuple:
         match t[0]:
+            case 'declare':
+                variables[t[2]] = evalExpr(t[3])
             case 'assign':
-                names[t[1]] = evalExpr(t[2])
+                variables[t[1]] = evalExpr(t[2])
             case 'print':
                 if type(t[1]) is str:
-                    if t[1] in names:
-                        print("TOAM PRINT : ", names[t[1]])
+                    if t[1] in variables:
+                        toamPrint(variables[t[1]])
                     else:
-                        print("TOAM PRINT : ", t[1])
+                        toamPrint(t[1])
                 else:
-                    print("TOAM PRINT : ", evalExpr(t[1]))
+                    toamPrint(evalExpr(t[1]))
             case 'scan':
-                names[t[1]] = input()
+                variables[t[1]] = input()
             case 'if':
                 if evalExpr(t[1]):
                     evalInst(t[2])
@@ -293,7 +420,20 @@ def evalInst(t):
 
 import ply.yacc as yacc
 
+
+variables = {}
+tempVariables = {}
+
+precedence = (
+    ('left', 'AND', 'OR'),
+    ('nonassoc', 'GREATER', 'LESS'),
+    ('left', 'PLUS', 'MINUS'),
+    ('left', 'TIMES', 'DIVIDE'),
+)
+
+DEBUG = False
+
 yacc.yacc()
 
-s = open("test.txt", "r").read()
+s = open("prog.toam", "r").read()
 yacc.parse(s)
