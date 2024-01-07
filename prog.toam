@@ -1,6 +1,12 @@
 int x = 1;
 
-print("x");
+print(x); // 1
+
+int z = 30;
+
+// print(1 + y);
+
+print(1 + x - 50 * 88 - z);
 
 while (x < 10) {
     print(x);

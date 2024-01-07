@@ -344,6 +344,19 @@ def evalSyntaxCondition(condition, syntaxVariables):
                 return evalSyntaxCondition(sub, syntaxVariables)
     return True
 
+def evalSyntaxPrint(t, tempVariables):
+    # t = 1
+    # print("test");
+    # print(1 + y);
+    # ('+', 1, 'y')
+    if type(t) is str:
+        if t not in knownOperators:
+            if t not in tempVariables:
+                exit(f"TOAM ERROR : Variable '{t}' non déclarée ")
+    elif type(t) is tuple:
+        for sub in t:
+                evalSyntaxPrint(sub, tempVariables)
+
 def evalSyntax(t):
     if type(t) is tuple:
         match t[0]:
@@ -361,6 +374,17 @@ def evalSyntax(t):
                         exit(f"TOAM ERROR : Type incorrect dans la déclaration : '{t[1]}'")
             # t[1] = name
             # t[2] = value
+            case 'print':
+                if type(t[1]) is str:
+                    if t[1][0] != '"':
+                        if t[1] not in tempVariables:
+                            exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
+                else:
+                    evalSyntaxPrint(t[1], tempVariables)
+            case 'scan':
+                # scan or toamScan
+                if t[1] in tempVariables:
+                    evalExprSyntax(t[2], getType(tempVariables[t[1]]), tempVariables)
             case 'assign':
                 if t[1] in tempVariables:
                     debug(f"evalExprSyntax : t[2] = {t[2]}")
