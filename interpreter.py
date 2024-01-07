@@ -218,7 +218,7 @@ def p_boolean_definition(p):
 
 def p_expression_charchain(p):
     'expression : CHARCHAIN'
-    p[0] = p[2]
+    p[0] = p[1]
 
 
 def p_expression_binop_bool(p):
@@ -257,6 +257,8 @@ def p_error(p):
 def evalExpr(t):
     # print('eval de ', t)
     if type(t) is str:
+        if t[0] == '"':
+            return t
         return get_variable(t)
     if type(t) is int:
         return t
@@ -314,6 +316,8 @@ def isTypeCorrect(expectedType, value):
 def evalExprSyntax(t, typeExpected):
     debug(f"t = {t}")
     debug(f"typeExpected = {typeExpected}")
+    if type(t) is typeExpected:
+        return True
     if type(t) is str:
         debug("t is a string")
         if exist_in_syntax_scope(t):
@@ -321,8 +325,6 @@ def evalExprSyntax(t, typeExpected):
             return getType(get_syntax_variable(t)) is typeExpected
         else:
             exit(f"TOAM ERROR : La variable '{t}' n'est pas déclarée")
-    if type(t) is typeExpected:
-        return True
     if type(t) is tuple:
         debug(f"t is a tuple : {t}")
         if t[0] == '/' and t[2] == 0:
@@ -450,7 +452,12 @@ def evalInst(t):
                         chaine = t[1].strip('"')
                         toamPrint(chaine)
                     else:
-                        toamPrint(get_variable(t[1]))
+                        toBePrinted = get_variable(t[1])
+                        if type(toBePrinted) is str:
+                            chaine = toBePrinted.strip('"')
+                            toamPrint(chaine)
+                        else:
+                            toamPrint(get_variable(t[1]))
                 else:
                     toamPrint(evalExpr(t[1]))
             case 'scan':
