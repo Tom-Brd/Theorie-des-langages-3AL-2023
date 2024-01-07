@@ -337,7 +337,7 @@ def evalSyntaxCondition(condition, syntaxVariables):
                     debug("sub is knownOperator")
                     continue
                 elif sub not in syntaxVariables:
-                    print(syntaxVariables)
+                    debug(syntaxVariables)
                     exit(f"TOAM ERROR : Variable '{sub}' non déclarée dans la condition")
             else:
                 debug("sub is not str")
@@ -355,7 +355,7 @@ def evalSyntaxPrint(t, tempVariables):
                 exit(f"TOAM ERROR : Variable '{t}' non déclarée ")
     elif type(t) is tuple:
         for sub in t:
-                evalSyntaxPrint(sub, tempVariables)
+            evalSyntaxPrint(sub, tempVariables)
 
 def evalSyntax(t):
     if type(t) is tuple:
@@ -396,6 +396,16 @@ def evalSyntax(t):
             case 'while':
                 if evalExprSyntax(evalSyntaxCondition(t[1], tempVariables), bool, tempVariables):
                     evalSyntax(t[2])
+            case 'for':
+                evalSyntax(t[1])
+                if evalExprSyntax(evalSyntaxCondition(t[2], tempVariables), bool, tempVariables):
+                    evalSyntax(t[4])
+                    evalSyntax(t[3])
+            case 'if':
+                if evalExprSyntax(evalSyntaxCondition(t[1], tempVariables), bool, tempVariables):
+                    evalSyntax(t[2])
+                if len(t) == 4:
+                    evalSyntax(t[3])
             case 'bloc':
                 evalSyntax(t[1])
                 evalSyntax(t[2])
