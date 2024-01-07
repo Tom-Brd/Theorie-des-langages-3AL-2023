@@ -27,7 +27,7 @@ tokens = [
              'NUMBER', 'MINUS',
              'PLUS', 'TIMES', 'DIVIDE',
              'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET',
-             'AND', 'OR', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS', 'NOTEQUALS',
+             'AND', 'OR', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS', 'NOTEQUALS', 'GREATEREQUALS', 'LESSEQUALS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
              'TRUE', 'FALSE',
              "CHARCHAIN", "SIMPLE_COMMENT", "MULTI_COMMENT",
@@ -48,6 +48,8 @@ t_SEMICOLON = r';'
 t_ASSIGN = r'='
 t_GREATER = r'>'
 t_LESS = r'<'
+t_GREATEREQUALS = r'>='
+t_LESSEQUALS = r'<='
 t_EQUALS = r'=='
 t_NOTEQUALS = r'!='
 t_INCREMENT = r'\+\+'
@@ -225,7 +227,9 @@ def p_expression_binop_bool(p):
                 | expression GREATER expression
                 | expression LESS expression
                 | expression EQUALS expression
-                | expression NOTEQUALS expression'''
+                | expression NOTEQUALS expression
+                | expression GREATEREQUALS expression
+                | expression LESSEQUALS expression'''
     p[0] = (p[2], p[1], p[3])
 
 
@@ -252,8 +256,10 @@ def p_error(p):
 
 def evalExpr(t):
     # print('eval de ', t)
-    if type(t) is str: return variables[t]
-    if type(t) is int: return t
+    if type(t) is str:
+        return get_variable(t)
+    if type(t) is int:
+        return t
     if type(t) is tuple:
         match t[0]:
             case '+':
@@ -274,6 +280,10 @@ def evalExpr(t):
                 return evalExpr(t[1]) > evalExpr(t[2])
             case '<':
                 return evalExpr(t[1]) < evalExpr(t[2])
+            case '>=':
+                return evalExpr(t[1]) >= evalExpr(t[2])
+            case '<=':
+                return evalExpr(t[1]) <= evalExpr(t[2])
             case '==':
                 return evalExpr(t[1]) == evalExpr(t[2])
             case '!=':
@@ -301,15 +311,14 @@ def isTypeCorrect(expectedType, value):
     return type(value) is getType(expectedType)
 
 
-def evalExprSyntax(t, typeExpected, tempVariables):
+def evalExprSyntax(t, typeExpected):
     debug(f"t = {t}")
     debug(f"typeExpected = {typeExpected}")
     if type(t) is str:
         debug("t is a string")
-
-        if t in tempVariables:
+        if exist_in_syntax_scope(t):
             debug("t is a variable")
-            return getType(tempVariables[t]) is typeExpected
+            return getType(get_syntax_variable(t)) is typeExpected
         else:
             exit(f"TOAM ERROR : La variable '{t}' n'est pas déclarée")
     if type(t) is typeExpected:
@@ -318,14 +327,14 @@ def evalExprSyntax(t, typeExpected, tempVariables):
         debug(f"t is a tuple : {t}")
         if t[0] == '/' and t[2] == 0:
             exit("TOAM ERROR : Division par 0 impossible")
-        return evalExprSyntax(t[1], typeExpected, tempVariables) and evalExprSyntax(t[2], typeExpected, tempVariables)
+        return evalExprSyntax(t[1], typeExpected) and evalExprSyntax(t[2], typeExpected)
     return False
 
 
-knownOperators = ['+', '-', '*', '/', '&&', '||', '>', '<', '==', '!=', '++', '--', '+=', '-=']
+knownOperators = ['+', '-', '*', '/', '&&', '||', '>', '<', '==', '!=', '++', '--', '+=', '-=', '>=', '<=']
 
 
-def evalSyntaxCondition(condition, syntaxVariables):
+def evalSyntaxCondition(condition):
     debug("On est passé dans evalSyntaxCondition")
     debug(f"Condition = {condition}")
     if type(condition) is tuple:
@@ -336,26 +345,26 @@ def evalSyntaxCondition(condition, syntaxVariables):
                 if sub in knownOperators:
                     debug("sub is knownOperator")
                     continue
-                elif sub not in syntaxVariables:
-                    debug(syntaxVariables)
+                elif not exist_in_syntax_scope(sub):
+                    debug(syntax_analysis_variables_scope_stack)
                     exit(f"TOAM ERROR : Variable '{sub}' non déclarée dans la condition")
             else:
                 debug("sub is not str")
-                return evalSyntaxCondition(sub, syntaxVariables)
+                return evalSyntaxCondition(sub)
     return True
 
-def evalSyntaxPrint(t, tempVariables):
+def evalSyntaxPrint(t):
     # t = 1
     # print("test");
     # print(1 + y);
     # ('+', 1, 'y')
     if type(t) is str:
         if t not in knownOperators:
-            if t not in tempVariables:
+            if not exist_in_syntax_scope(t):
                 exit(f"TOAM ERROR : Variable '{t}' non déclarée ")
     elif type(t) is tuple:
         for sub in t:
-            evalSyntaxPrint(sub, tempVariables)
+            evalSyntaxPrint(sub)
 
 def evalSyntax(t):
     if type(t) is tuple:
@@ -364,12 +373,12 @@ def evalSyntax(t):
             # t[2] = name
             # t[3] = value
             case 'declare':
-                if t[2] in tempVariables:
+                if exist_in_syntax_scope(t[2]):
                     exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
                 else:
-                    if evalExprSyntax(t[3], getType(t[1]), tempVariables):
-                        tempVariables[t[2]] = t[1]
-                        debug(f"tempVariables = {tempVariables}")
+                    if evalExprSyntax(t[3], getType(t[1])):
+                        set_syntax_variable(t[2], t[1])
+                        debug(f"scopeSyntaxVariables = {syntax_analysis_variables_scope_stack}")
                     else:
                         exit(f"TOAM ERROR : Type incorrect dans la déclaration : '{t[1]}'")
             # t[1] = name
@@ -377,35 +386,50 @@ def evalSyntax(t):
             case 'print':
                 if type(t[1]) is str:
                     if t[1][0] != '"':
-                        if t[1] not in tempVariables:
+                        if not exist_in_syntax_scope(t[1]):
                             exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
                 else:
-                    evalSyntaxPrint(t[1], tempVariables)
+                    evalSyntaxPrint(t[1])
             case 'scan':
-                if t[1] not in tempVariables:
+                if not exist_in_syntax_scope(t[1]):
                     exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
             case 'assign':
-                if t[1] in tempVariables:
+                if exist_in_syntax_scope(t[1]):
                     debug(f"evalExprSyntax : t[2] = {t[2]}")
-                    debug(f"evalExprSyntax : getType(tempVariables[t[1]]) = {getType(tempVariables[t[1]])}")
-                    debug(f"evalExprSyntax : tempVariables = {tempVariables}")
-                    if not evalExprSyntax(t[2], getType(tempVariables[t[1]]), tempVariables):
-                        exit(f"TOAM ERROR : Type incorrect dans l'affectation : {tempVariables[t[1]]}")
+                    debug(f"evalExprSyntax : getType(tempVariables[t[1]]) = "
+                          f"{getType(get_syntax_variable(t[1]))}")
+                    debug(f"evalExprSyntax : scopeSyntaxVariables = {syntax_analysis_variables_scope_stack}")
+                    if not evalExprSyntax(t[2], getType(get_syntax_variable(t[1]))):
+                        exit(f"TOAM ERROR : Type incorrect dans l'affectation : {get_syntax_variable(t[1])}")
                 else:
                     exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée")
             case 'while':
-                if evalExprSyntax(evalSyntaxCondition(t[1], tempVariables), bool, tempVariables):
+                create_syntax_scope()
+                if evalExprSyntax(evalSyntaxCondition(t[1]), bool):
+                    create_syntax_scope()
                     evalSyntax(t[2])
+                    exit_syntax_scope()
+                exit_syntax_scope()
             case 'for':
+                create_syntax_scope()
                 evalSyntax(t[1])
-                if evalExprSyntax(evalSyntaxCondition(t[2], tempVariables), bool, tempVariables):
+                if evalExprSyntax(evalSyntaxCondition(t[2]), bool):
+                    create_syntax_scope()
                     evalSyntax(t[4])
                     evalSyntax(t[3])
+                    exit_syntax_scope()
+                exit_syntax_scope()
             case 'if':
-                if evalExprSyntax(evalSyntaxCondition(t[1], tempVariables), bool, tempVariables):
+                create_syntax_scope()
+                if evalExprSyntax(evalSyntaxCondition(t[1]), bool):
+                    create_syntax_scope()
                     evalSyntax(t[2])
+                    exit_syntax_scope()
                 if len(t) == 4:
+                    create_syntax_scope()
                     evalSyntax(t[3])
+                    exit_syntax_scope()
+                exit_syntax_scope()
             case 'bloc':
                 evalSyntax(t[1])
                 evalSyntax(t[2])
@@ -417,45 +441,60 @@ def evalInst(t):
     if type(t) is tuple:
         match t[0]:
             case 'declare':
-                variables[t[2]] = evalExpr(t[3])
+                set_variable(t[2], evalExpr(t[3]))
             case 'assign':
-                variables[t[1]] = evalExpr(t[2])
+                set_variable(t[1], evalExpr(t[2]))
             case 'print':
                 if type(t[1]) is str:
-                    if t[1] in variables:
-                        toamPrint(variables[t[1]])
+                    if t[1][0] == '"':
+                        chaine = t[1].strip('"')
+                        toamPrint(chaine)
                     else:
-                        toamPrint(t[1])
+                        toamPrint(get_variable(t[1]))
                 else:
                     toamPrint(evalExpr(t[1]))
             case 'scan':
-                typ = type(variables[t[1]])
+                typ = type(get_variable([t[1]]))
                 userInput = input()
                 try:
                     if typ is int:
-                        variables[t[1]] = int(userInput)
+                        set_variable(t[1], int(userInput))
                     elif typ is float:
-                        variables[t[1]] = float(userInput)
+                        set_variable(t[1], float(userInput))
                     elif typ is str:
-                        variables[t[1]] = str(userInput)
+                        set_variable(t[1], str(userInput))
                     elif typ is bool:
-                        variables[t[1]] = bool(userInput)
+                        set_variable(t[1], bool(userInput))
                 except ValueError:
                     exit(f"TOAM ERROR : Impossible de convertir l'entrée '{userInput}' en {typ} : (Variable {t[1]})")
             case 'if':
+                create_scope()
                 if evalExpr(t[1]):
+                    create_scope()
                     evalInst(t[2])
+                    exit_scope()
                 else:
                     if len(t) == 4:
+                        create_scope()
                         evalInst(t[3])
+                        exit_scope()
+                exit_scope()
             case 'while':
+                create_scope()
                 while evalExpr(t[1]):
+                    create_scope()
                     evalInst(t[2])
+                    exit_scope()
+                exit_scope()
             case 'for':
+                create_scope()
                 evalInst(t[1])
                 while evalExpr(t[2]):
+                    create_scope()
                     evalInst(t[4])
                     evalInst(t[3])
+                    exit_scope()
+                exit_scope()
             case 'bloc':
                 evalInst(t[1])
                 evalInst(t[2])
@@ -465,9 +504,67 @@ def evalInst(t):
 
 import ply.yacc as yacc
 
+variables_scope_stack = [{}]
+syntax_analysis_variables_scope_stack = [{}]
 
-variables = {} # RUNTIME : stringVariable = value --> value is int, float, str, bool
-tempVariables = {} # CHECKSYNTAX : stringVariable = type
+def create_scope():
+    variables_scope_stack.append({})
+
+def exit_scope():
+    variables_scope_stack.pop()
+
+def exist_in_scope(name):
+    for scope in reversed(variables_scope_stack):
+        if name in scope:
+            return True
+    return False
+
+def update_in_scope(name, value):
+    for scope in reversed(variables_scope_stack):
+        if name in scope:
+            scope[name] = value
+            return True
+    return False
+
+def set_variable(name, value):
+    if not update_in_scope(name, value):
+        variables_scope_stack[-1][name] = value
+
+def get_variable(name):
+    for scope in reversed(variables_scope_stack):
+        if name in scope:
+            return scope[name]
+    exit(f"Variable non définie: {name}")
+
+def create_syntax_scope():
+    syntax_analysis_variables_scope_stack.append({})
+
+def exit_syntax_scope():
+    syntax_analysis_variables_scope_stack.pop()
+
+def exist_in_syntax_scope(name):
+    for scope in reversed(syntax_analysis_variables_scope_stack):
+        if name in scope:
+            return True
+    return False
+
+def update_in_syntax_scope(name, value):
+    for scope in reversed(syntax_analysis_variables_scope_stack):
+        if name in scope:
+            scope[name] = value
+            return True
+    return False
+
+def set_syntax_variable(name, value):
+    if not update_in_syntax_scope(name, value):
+        syntax_analysis_variables_scope_stack[-1][name] = value
+
+def get_syntax_variable(name):
+    for scope in reversed(syntax_analysis_variables_scope_stack):
+        if name in scope:
+            return scope[name]
+    exit(f"Variable non définie: {name}")
+
 
 precedence = (
     ('left', 'AND', 'OR'),

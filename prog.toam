@@ -1,23 +1,11 @@
-int x = 1;
+int x = 20;
 
-print(x); // 1
-
-int z = 30;
-
-// print(1 + y);
-
-// x = scan();
-
-// toamScan(x);
-// print(x);
-
-print(1 + x - 50 * 88 - z);
-
-while (x < 10) {
-    print(x);
-    x++;
+if(x < 25) {
+    int j = 20;
 };
 
-for (int i = 0; i < 10; y++) {
+for (int i = 0; i < 10; i++) {
+    int h = 10;
+    print(h);
     print(i);
 };
