@@ -6,6 +6,11 @@ int z = 30;
 
 // print(1 + y);
 
+x = scan();
+
+// toamScan(x);
+print(x);
+
 print(1 + x - 50 * 88 - z);
 
 while (x < 10) {

@@ -382,9 +382,8 @@ def evalSyntax(t):
                 else:
                     evalSyntaxPrint(t[1], tempVariables)
             case 'scan':
-                # scan or toamScan
-                if t[1] in tempVariables:
-                    evalExprSyntax(t[2], getType(tempVariables[t[1]]), tempVariables)
+                if t[1] not in tempVariables:
+                    exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
             case 'assign':
                 if t[1] in tempVariables:
                     debug(f"evalExprSyntax : t[2] = {t[2]}")
@@ -420,7 +419,19 @@ def evalInst(t):
                 else:
                     toamPrint(evalExpr(t[1]))
             case 'scan':
-                variables[t[1]] = input()
+                typ = type(variables[t[1]])
+                userInput = input()
+                try:
+                    if typ is int:
+                        variables[t[1]] = int(userInput)
+                    elif typ is float:
+                        variables[t[1]] = float(userInput)
+                    elif typ is str:
+                        variables[t[1]] = str(userInput)
+                    elif typ is bool:
+                        variables[t[1]] = bool(userInput)
+                except ValueError:
+                    exit(f"TOAM ERROR : Impossible de convertir l'entrée '{userInput}' en {typ} : (Variable {t[1]})")
             case 'if':
                 if evalExpr(t[1]):
                     evalInst(t[2])
@@ -445,8 +456,8 @@ def evalInst(t):
 import ply.yacc as yacc
 
 
-variables = {}
-tempVariables = {}
+variables = {} # RUNTIME : stringVariable = value --> value is int, float, str, bool
+tempVariables = {} # CHECKSYNTAX : stringVariable = type
 
 precedence = (
     ('left', 'AND', 'OR'),
