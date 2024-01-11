@@ -1,0 +1,32 @@
+/* function void printInt(int x) {
+    print(x);
+};
+int x = printInt(5);
+
+function int multiplyBy2(int x) {
+    return x * 2;
+};
+print(multiplyBy2(5));
+
+*/
+function int resteDeDivision(int a, int b) {
+    if(a - b < 0) {
+        return a;
+    };
+    return resteDeDivision(a-b, b);
+};
+int z = resteDeDivision(10, 4);
+print(z);
+
+
+/*
+function void recursiveFunction(int x) {
+    if(x == 0) {
+        return;
+    };
+    print(x);
+    return recursiveFunction(x - 1);
+};
+int x = recursiveFunction(5);
+print(x);
+*/
