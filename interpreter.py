@@ -513,6 +513,8 @@ def evalInst(t):
     if type(t) is tuple:
         match t[0]:
             case 'return':
+                if t[1] == "empty":
+                    return "empty"
                 return evalExpr(t[1])
             case 'function':
                 # t[0] = function
@@ -585,11 +587,9 @@ def evalInst(t):
                     exit_scope()
                 exit_scope()
             case 'bloc':
-                # evalInst(t[1])
-                # evalInst(t[2])
                 for stmt in t[1:]:
                     result = evalInst(stmt)
-                    if stmt and stmt[0] == 'return':
+                    if result is not None or result == "empty":
                         return result
             case 'start':
                 evalInst(t[1])
