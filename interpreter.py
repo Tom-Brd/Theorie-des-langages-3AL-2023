@@ -246,6 +246,15 @@ def p_expression_call_function(p):
         p[0] = ('call_function', p[1], p[3])
 
 
+def p_statement_call_function(p):
+    '''statement : NAME LPAREN RPAREN
+        | NAME LPAREN FUNCPARAMS RPAREN'''
+    if len(p) == 4:
+        p[0] = ('call_function_void', p[1])
+    else:
+        p[0] = ('call_function_void', p[1], p[3])
+
+
 def p_type_definition(p):
     '''TYPE : INT
             | FLOAT
@@ -320,7 +329,10 @@ def evalExpr(t):
     if type(t) is str:
         if t[0] == '"':
             return t
-        return get_variable(t) or get_function(t)
+        if exist_in_scope(t):
+            return get_variable(t)
+        else:
+            return get_function(t)
     if type(t) is int:
         return t
     if type(t) is tuple:
@@ -355,6 +367,13 @@ def evalExpr(t):
             case '<=':
                 return evalExpr(t[1]) <= evalExpr(t[2])
             case '==':
+                debug(get_variable(t[1]))
+                debug("type of t[1] = " + str(type(t[1])))
+                debug("type of t[2] = " + str(type(t[2])))
+                debug("t[1] = " + str(get_variable(t[1])))
+                debug("t[2] = " + str(t[2]))
+                debug("evalExpr(t[1]) = " + str(evalExpr(t[1])))
+                debug("evalExpr(t[2]) = " + str(evalExpr(t[2])))
                 return evalExpr(t[1]) == evalExpr(t[2])
             case '!=':
                 return evalExpr(t[1]) != evalExpr(t[2])
@@ -516,6 +535,8 @@ def evalInst(t):
                 if t[1] == "empty":
                     return "empty"
                 return evalExpr(t[1])
+            case 'call_function_void':
+                call_function(evalExpr(t[1]), evalExpr(t[2]))
             case 'function':
                 # t[0] = function
                 # t[1] = return type
@@ -558,6 +579,7 @@ def evalInst(t):
             case 'if':
                 create_scope()
                 result = None
+                debug(evalExpr(t[1]))
                 if evalExpr(t[1]):
                     create_scope()
                     result = evalInst(t[2])
@@ -626,7 +648,7 @@ def call_function(name, call_params):
         declare_variables_function(parameters, call_params, 0)
         result = evalInst(instructions)
         exit_scope()
-        return result
+clea        return result
     exit(f"TOAM ERROR : La fonction '{name}' n'existe pas")
 
 

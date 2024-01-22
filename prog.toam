@@ -1,24 +1,9 @@
-function void printInt(int x) {
-    print("test before print");
-    return;
-    print("test after print");
-};
-int x = printInt(5);
-
-function int multiplyBy2(int x) {
-    print("test before return");
-    return x * 2;
-    print("test after return");
-};
-int y = multiplyBy2(5);
-print(y);
-print(multiplyBy2(5));
-
-function int resteDeDivision(int a, int b) {
-    if(a - b < 0) {
-        return a;
+function int fibo(int n) {
+    if (n <= 1) {
+        return n;
     };
-    return resteDeDivision(a-b, b);
+    return fibo(n-1) + fibo(n-2);
 };
-int z = resteDeDivision(10, 4);
-print(z);
+int result = fibo(5);
+print("final result");
+print(result);
