@@ -648,7 +648,7 @@ def call_function(name, call_params):
         declare_variables_function(parameters, call_params, 0)
         result = evalInst(instructions)
         exit_scope()
-clea        return result
+        return result
     exit(f"TOAM ERROR : La fonction '{name}' n'existe pas")
 
 
