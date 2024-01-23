@@ -118,8 +118,10 @@ def p_start(p):
     'start : bloc'
     p[0] = ('START', p[1])
     print('Arbre de dérivation = ', p[0])
-    printTreeGraph(p[1])
+    # printTreeGraph(p[1])
     # evalSyntax(p[1])
+    global runtime_stack
+    runtime_stack = [{}]
     evalInst(p[1])
 
 
@@ -139,9 +141,16 @@ def p_bloc(p):
             p[0] = ('bloc', p[1], 'empty')
 
 
+
+
+
 def p_statement_function(p):
-    '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LBRACKET bloc RBRACKET'''
-    p[0] = ('function', p[2], p[3], p[5], p[8])
+    '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LBRACKET bloc RBRACKET
+                | FUNCTION RETURNTYPE NAME LPAREN RPAREN LBRACKET bloc RBRACKET'''
+    if len(p) == 10:
+        p[0] = ('function', p[2], p[3], p[5], p[8])
+    else:
+        p[0] = ('function', p[2], p[3], 'empty_params', p[7])
 
 
 def p_params(p):
@@ -343,7 +352,10 @@ def evalExpr(t):
                 else:
                     return evalExpr(t[2]), evalExpr(t[1])
             case 'call_function':
-                return call_function(evalExpr(t[1]), evalExpr(t[2]))
+                if len(t) == 3:
+                    return call_function(evalExpr(t[1]), evalExpr(t[2]))
+                else:
+                    return call_function(evalExpr(t[1]), None)
             case '+':
                 return evalExpr(t[1]) + evalExpr(t[2])
             case '*':
@@ -407,9 +419,9 @@ def evalExprSyntax(t, typeExpected):
         return True
     if type(t) is str:
         debug("t is a string")
-        if exist_in_syntax_scope(t):
+        if exist_in_scope(t):
             debug("t is a variable")
-            return getType(get_syntax_variable(t)) is typeExpected
+            return getType(get_variable(t)) is typeExpected
         else:
             exit(f"TOAM ERROR : La variable '{t}' n'est pas déclarée")
     if type(t) is tuple:
@@ -434,8 +446,8 @@ def evalSyntaxCondition(condition):
                 if sub in knownOperators:
                     debug("sub is knownOperator")
                     continue
-                elif not exist_in_syntax_scope(sub):
-                    debug(syntax_analysis_variables_scope_stack)
+                elif not exist_in_scope(sub):
+                    debug(runtime_stack)
                     exit(f"TOAM ERROR : Variable '{sub}' non déclarée dans la condition")
             else:
                 debug("sub is not str")
@@ -450,7 +462,7 @@ def evalSyntaxPrint(t):
     # ('+', 1, 'y')
     if type(t) is str:
         if t not in knownOperators:
-            if not exist_in_syntax_scope(t):
+            if not exist_in_scope(t):
                 exit(f"TOAM ERROR : Variable '{t}' non déclarée ")
     elif type(t) is tuple:
         for sub in t:
@@ -464,12 +476,12 @@ def evalSyntax(t):
             # t[2] = name
             # t[3] = value
             case 'declare':
-                if exist_in_syntax_scope(t[2]):
+                if exist_in_scope(t[2]):
                     exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
                 else:
                     if evalExprSyntax(t[3], getType(t[1])):
-                        set_syntax_variable(t[2], t[1])
-                        debug(f"scopeSyntaxVariables = {syntax_analysis_variables_scope_stack}")
+                        set_variable( t[2], t[1])
+                        debug(f"scopeSyntaxVariables = {runtime_stack}")
                     else:
                         exit(f"TOAM ERROR : Type incorrect dans la déclaration : '{t[1]}'")
             # t[1] = name
@@ -477,50 +489,50 @@ def evalSyntax(t):
             case 'print':
                 if type(t[1]) is str:
                     if t[1][0] != '"':
-                        if not exist_in_syntax_scope(t[1]):
+                        if not exist_in_scope(t[1]):
                             exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
                 else:
                     evalSyntaxPrint(t[1])
             case 'scan':
-                if not exist_in_syntax_scope(t[1]):
+                if not exist_in_scope(t[1]):
                     exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée ")
             case 'assign':
-                if exist_in_syntax_scope(t[1]):
+                if exist_in_scope(t[1]):
                     debug(f"evalExprSyntax : t[2] = {t[2]}")
                     debug(f"evalExprSyntax : getType(tempVariables[t[1]]) = "
-                          f"{getType(get_syntax_variable(t[1]))}")
-                    debug(f"evalExprSyntax : scopeSyntaxVariables = {syntax_analysis_variables_scope_stack}")
-                    if not evalExprSyntax(t[2], getType(get_syntax_variable(t[1]))):
-                        exit(f"TOAM ERROR : Type incorrect dans l'affectation : {get_syntax_variable(t[1])}")
+                          f"{getType(get_variable(t[1]))}")
+                    debug(f"evalExprSyntax : scopeSyntaxVariables = {runtime_stack}")
+                    if not evalExprSyntax(t[2], getType(get_variable(t[1]))):
+                        exit(f"TOAM ERROR : Type incorrect dans l'affectation : {get_variable(t[1])}")
                 else:
                     exit(f"TOAM ERROR : Variable '{t[1]}' non déclarée")
             case 'while':
-                create_syntax_scope()
+                create_scope()
                 if evalExprSyntax(evalSyntaxCondition(t[1]), bool):
-                    create_syntax_scope()
+                    create_scope()
                     evalSyntax(t[2])
-                    exit_syntax_scope()
-                exit_syntax_scope()
+                    exit_scope()
+                exit_scope()
             case 'for':
-                create_syntax_scope()
+                create_scope()
                 evalSyntax(t[1])
                 if evalExprSyntax(evalSyntaxCondition(t[2]), bool):
-                    create_syntax_scope()
+                    create_scope()
                     evalSyntax(t[4])
                     evalSyntax(t[3])
-                    exit_syntax_scope()
-                exit_syntax_scope()
+                    exit_scope()
+                exit_scope()
             case 'if':
-                create_syntax_scope()
+                create_scope()
                 if evalExprSyntax(evalSyntaxCondition(t[1]), bool):
-                    create_syntax_scope()
+                    create_scope()
                     evalSyntax(t[2])
-                    exit_syntax_scope()
+                    exit_scope()
                 if len(t) == 4:
-                    create_syntax_scope()
+                    create_scope()
                     evalSyntax(t[3])
-                    exit_syntax_scope()
-                exit_syntax_scope()
+                    exit_scope()
+                exit_scope()
             case 'bloc':
                 evalSyntax(t[1])
                 evalSyntax(t[2])
@@ -536,7 +548,10 @@ def evalInst(t):
                     return "empty"
                 return evalExpr(t[1])
             case 'call_function_void':
-                call_function(evalExpr(t[1]), evalExpr(t[2]))
+                if len(t) == 3:
+                    return call_function(evalExpr(t[1]), evalExpr(t[2]))
+                else:
+                    return call_function(evalExpr(t[1]), None)
             case 'function':
                 # t[0] = function
                 # t[1] = return type
@@ -561,9 +576,12 @@ def evalInst(t):
                         else:
                             toamPrint(get_variable(t[1]))
                 else:
-                    toamPrint(evalExpr(t[1]))
+                    result = evalExpr(t[1])
+                    if type(result) is str:
+                        result = result.strip('"')
+                    toamPrint(result)
             case 'scan':
-                typ = type(get_variable([t[1]]))
+                typ = type(get_variable(t[1]))
                 userInput = input()
                 try:
                     if typ is int:
@@ -577,6 +595,10 @@ def evalInst(t):
                 except ValueError:
                     exit(f"TOAM ERROR : Impossible de convertir l'entrée '{userInput}' en {typ} : (Variable {t[1]})")
             case 'if':
+                precedent_scope_is_global = isInGlobalScope()
+                if precedent_scope_is_global:
+                    debug("-> LEAVING GLOBAL SCOPE")
+                    setInGlobalScope(False)
                 create_scope()
                 result = None
                 debug(evalExpr(t[1]))
@@ -590,16 +612,30 @@ def evalInst(t):
                         result = evalInst(t[3])
                         exit_scope()
                 exit_scope()
+                if precedent_scope_is_global:
+                    debug("-> RETURNING TO GLOBAL SCOPE\n")
+                    setInGlobalScope(True)
                 if result is not None:
                     return result
             case 'while':
+                precedent_scope_is_global = isInGlobalScope()
+                if precedent_scope_is_global:
+                    debug("-> LEAVING GLOBAL SCOPE\n")
+                    setInGlobalScope(False)
                 create_scope()
                 while evalExpr(t[1]):
                     create_scope()
                     evalInst(t[2])
                     exit_scope()
                 exit_scope()
+                if precedent_scope_is_global:
+                    debug("-> RETURNING TO GLOBAL SCOPE\n")
+                    setInGlobalScope(True)
             case 'for':
+                precedent_scope_is_global = isInGlobalScope()
+                if precedent_scope_is_global:
+                    debug("-> LEAVING GLOBAL SCOPE\n")
+                    setInGlobalScope(False)
                 create_scope()
                 evalInst(t[1])
                 while evalExpr(t[2]):
@@ -608,6 +644,9 @@ def evalInst(t):
                     evalInst(t[3])
                     exit_scope()
                 exit_scope()
+                if precedent_scope_is_global:
+                    debug("-> RETURNING TO GLOBAL SCOPE\n")
+                    setInGlobalScope(True)
             case 'bloc':
                 for stmt in t[1:]:
                     result = evalInst(stmt)
@@ -619,10 +658,31 @@ def evalInst(t):
 
 import ply.yacc as yacc
 
-variables_scope_stack = [{}]
-syntax_analysis_variables_scope_stack = [{}]
 functions = {}
 
+global_scope = {}
+runtime_stack = [{}]
+
+functions_stack = []
+
+is_global_scope = True
+is_in_function = False
+
+
+def createFunctionStack():
+    functions_stack.append([{}])
+
+def exitFunctionStack():
+    functions_stack.pop()
+
+def setInGlobalScope(boolean):
+    global is_global_scope
+    is_global_scope = boolean
+
+
+def isInGlobalScope():
+    global is_global_scope
+    return is_global_scope
 
 def declare_variables_function(parameters, call_params, index):
     if type(call_params) is tuple:
@@ -644,10 +704,36 @@ def call_function(name, call_params):
         parameters = called_function[1]
         instructions = called_function[2]
 
+        precedent_scope_is_global = isInGlobalScope()
+        if precedent_scope_is_global:
+            debug("-> LEAVING GLOBAL SCOPE")
+            setInGlobalScope(False)
+        """
+        ON ENTRE DANS UNE FONCTION:
+            - Est ce que la fonction est appellée depuis une fonction ?
+                Oui : 
+                    - On ferme sa gueule
+                Non : 
+                    - On set isInFunction à True au début
+                    - On pense à mettre isInFunction à False à la fin
+        """
+        precedent_scope_is_function = isInFunction()
+        if not precedent_scope_is_function:
+            debug("-> ENTERING FUNCTIONS SCOPE LIST")
+            setIsInFunction(True)
+        createFunctionStack()
         create_scope()
-        declare_variables_function(parameters, call_params, 0)
+        if type(parameters) is tuple:
+            declare_variables_function(parameters, call_params, 0)
         result = evalInst(instructions)
         exit_scope()
+        exitFunctionStack()
+        if not precedent_scope_is_function:
+            debug("-> LEAVING FUNCTIONS SCOPE LIST")
+            setIsInFunction(False)
+        if precedent_scope_is_global:
+            debug("-> RETURNING TO GLOBAL SCOPE")
+            setInGlobalScope(True)
         return result
     exit(f"TOAM ERROR : La fonction '{name}' n'existe pas")
 
@@ -658,23 +744,53 @@ def get_function(name):
     # exit(f"TOAM ERROR : La fonction '{name}' n'existe pas")
 
 
+"""
+ON RENTRE DANS UN BLOC QUI NECESSITE UN SCOPE :
+    - EST CE QUE LE PRECEDENT SCOPE EST LE SCOPE GLOBAL ?
+        OUI:
+            - On set le is_global à False
+            - On s'assure de bien le reset à True à la fin du bloc
+        NON :
+            - On ferma sa gueule, aucune action en début ou en fin
+"""
+
+def isInFunction():
+    global is_in_function
+    return is_in_function
+
+
+def setIsInFunction(boolean):
+    global is_in_function
+    is_in_function = boolean
+
+
 def create_scope():
-    variables_scope_stack.append({})
+    if isInFunction():
+        functions_stack[-1].append({})
+    else:
+        runtime_stack.append({})
 
 
 def exit_scope():
-    variables_scope_stack.pop()
+    if isInFunction():
+        functions_stack[-1].pop()
+    else:
+        runtime_stack.pop()
 
 
 def exist_in_scope(name):
-    for scope in reversed(variables_scope_stack):
+    if isInFunction():
+        for scope in reversed(functions_stack[-1]):
+            if name in scope:
+                return True
+    for scope in reversed(runtime_stack):
         if name in scope:
             return True
-    return False
+    return name in global_scope
 
 
-def update_in_scope(name, value):
-    for scope in reversed(variables_scope_stack):
+def update_in_scope(stack, name, value):
+    for scope in reversed(stack):
         if name in scope:
             scope[name] = value
             return True
@@ -682,49 +798,33 @@ def update_in_scope(name, value):
 
 
 def set_variable(name, value):
-    if not update_in_scope(name, value):
-        variables_scope_stack[-1][name] = value
+    if name in global_scope or isInGlobalScope():
+        global_scope[name] = value
+    elif isInFunction():
+        if not update_in_scope(functions_stack[-1], name, value):
+            functions_stack[-1][-1][name] = value
+    else:
+        if not update_in_scope(runtime_stack, name, value):
+            runtime_stack[-1][name] = value
 
 
 def get_variable(name):
-    for scope in reversed(variables_scope_stack):
-        if name in scope:
-            return scope[name]
-    # exit(f"Variable non définie: {name}")
+    if isInGlobalScope():
+        return get_var_in_global_scope(name)
+    elif isInFunction():
+        for scope in reversed(functions_stack[-1]):
+            if name in scope:
+                return scope[name]
+    else:
+        for scope in reversed(runtime_stack):
+            if name in scope:
+                return scope[name]
+    return get_var_in_global_scope(name)
 
 
-def create_syntax_scope():
-    syntax_analysis_variables_scope_stack.append({})
-
-
-def exit_syntax_scope():
-    syntax_analysis_variables_scope_stack.pop()
-
-
-def exist_in_syntax_scope(name):
-    for scope in reversed(syntax_analysis_variables_scope_stack):
-        if name in scope:
-            return True
-    return False
-
-
-def update_in_syntax_scope(name, value):
-    for scope in reversed(syntax_analysis_variables_scope_stack):
-        if name in scope:
-            scope[name] = value
-            return True
-    return False
-
-
-def set_syntax_variable(name, value):
-    if not update_in_syntax_scope(name, value):
-        syntax_analysis_variables_scope_stack[-1][name] = value
-
-
-def get_syntax_variable(name):
-    for scope in reversed(syntax_analysis_variables_scope_stack):
-        if name in scope:
-            return scope[name]
+def get_var_in_global_scope(name):
+    if name in global_scope:
+        return global_scope[name]
     exit(f"Variable non définie: {name}")
 
 

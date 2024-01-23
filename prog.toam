@@ -1,9 +1,68 @@
+
 function int fibo(int n) {
     if (n <= 1) {
         return n;
     };
     return fibo(n-1) + fibo(n-2);
 };
-int result = fibo(5);
+
+int result = fibo(12);
+int resultB = fibo(5);
 print("final result");
 print(result);
+print("final b result");
+print(resultB);
+
+
+function bool isSuperiorThan5(int a) {
+    return a > 5;
+};
+
+function string getHelloWorld() {
+    return "Hello world";
+};
+
+function int oui(int a) {
+    return a + x;
+};
+
+function void printHelloWorld() {
+    print(getHelloWorld());
+};
+
+int x = 5;
+print(x);
+if(x > 4) {
+    x = 4;
+    print(x);
+    int j = 0;
+    print(j);
+    if(j<1){
+        j = 5;
+        print(j);
+    };
+    for(int i = 0; i < 6; i++) {
+      print(i);
+    };
+    int z = 0;
+    while(z < 5) {
+       print(z);
+       z++;
+    };
+};
+
+int g = 6;
+print(isSuperiorThan5(g));
+print(isSuperiorThan5(g-2));
+print(oui(8));
+
+string t = getHelloWorld();
+print(t);
+print(getHelloWorld());
+
+string of = "oui";
+print(of);
+
+print("ouivasyouiouiavectonbeautaxipouetpouetpouet");
+
+printHelloWorld();
