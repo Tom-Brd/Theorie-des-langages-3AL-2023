@@ -3,7 +3,7 @@
 #
 # Expressions arithmétiques sans variables
 # -----------------------------------------------------------------------------
-from genereTreeGraphviz2 import printTreeGraph
+from project.toam.others.genereTreeGraphviz2 import printTreeGraph
 
 reserved = {
     'print': 'PRINT',
@@ -713,7 +713,7 @@ def call_function(name, call_params):
         ON ENTRE DANS UNE FONCTION:
             - Est ce que la fonction est appellée depuis une fonction ?
                 Oui : 
-                    - On ferme sa gueule
+                    - On ne fait rien
                 Non : 
                     - On set isInFunction à True au début
                     - On pense à mettre isInFunction à False à la fin
@@ -840,5 +840,6 @@ DEBUG = False
 
 yacc.yacc()
 
-s = open("prog.toam", "r").read()
-yacc.parse(s)
+def toam(path):
+    s = open(path, "r").read()
+    yacc.parse(s)

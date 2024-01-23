@@ -1,6 +1,6 @@
 Digraph.gv
-Digraph.gv.pdf
+project/toam/others/Digraph.gv.pdf
 .idea/
-parser.out
-parsetab.py
+project/toam/others/parser.out
+project/toam/others/parsetab.py
 __pycache__
