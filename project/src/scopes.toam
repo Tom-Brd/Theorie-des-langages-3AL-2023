@@ -13,3 +13,10 @@ print("global j = ");
 print(j);
 
 
+int x = 0;
+if(x == 0){
+    int j = 20;
+};
+print("global j = ");
+print(j);
+
