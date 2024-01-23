@@ -1,0 +1,15 @@
+function int increment(int x) {
+    int a = x+1;
+    print("little j = ");
+    int j = 4;
+    print(j);
+    return a;
+};
+
+int x = 0;
+int j = 5;
+print(increment(x));
+print("global j = ");
+print(j);
+
+

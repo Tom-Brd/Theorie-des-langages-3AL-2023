@@ -481,7 +481,7 @@ def evalSyntax(t):
                     exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
                 else:
                     if evalExprSyntax(t[3], getType(t[1])):
-                        set_variable( t[2], t[1])
+                        define_variable(t[2], t[1])
                         debug(f"scopeSyntaxVariables = {runtime_stack}")
                     else:
                         exit(f"TOAM ERROR : Type incorrect dans la déclaration : '{t[1]}'")
@@ -561,7 +561,7 @@ def evalInst(t):
                 # t[4] = bloc d'instruction
                 functions[t[2]] = (t[1], t[3], t[4])
             case 'declare':
-                set_variable(t[2], evalExpr(t[3]))
+                define_variable(t[2], evalExpr(t[3]))
             case 'assign':
                 set_variable(t[1], evalExpr(t[2]))
             case 'print':
@@ -687,9 +687,9 @@ def isInGlobalScope():
 
 def declare_variables_function(parameters, call_params, index):
     if type(call_params) is tuple:
-        set_variable(parameters[2], call_params[index])
+        define_variable(parameters[2], call_params[index])
     else:
-        set_variable(parameters[2], call_params)
+        define_variable(parameters[2], call_params)
 
     if len(parameters) == 3:
         return
@@ -796,6 +796,15 @@ def update_in_scope(stack, name, value):
             scope[name] = value
             return True
     return False
+
+
+def define_variable(name, value):
+    if isInGlobalScope():
+        global_scope[name] = value
+    elif isInFunction():
+        functions_stack[-1][-1][name] = value
+    else:
+        runtime_stack[-1][name] = value
 
 
 def set_variable(name, value):
