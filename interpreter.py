@@ -79,6 +79,7 @@ def t_NAME(t):
 def t_CHARCHAIN(t):
     r'\"[\w\W]*?\"'
     t.value = str(t.value)
+    # t.value = t.value.strip('"')
     return t
 
 
