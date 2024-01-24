@@ -1,0 +1,15 @@
+int x = 0;
+string a = "a";
+print(a+x);
+
+print("Hello world, valeur de a = " + a + " et valeur de x = " + x);
+
+int t = 5;
+int v = 5;
+print("Valeur de t+v = "+(t+v));
+
+bool b = true;
+print("Valeur de b = "+b);
+
+print("Oui"+(b+t));
+

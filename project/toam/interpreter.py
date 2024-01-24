@@ -334,11 +334,15 @@ def evalExpr(t):
     # print('eval de ', t)
     if type(t) is str:
         if t[0] == '"':
-            return t
+            return t.strip('"')
         if exist_in_scope(t):
             return get_variable(t)
         else:
             return get_function(t)
+    if type(t) is bool:
+        return t
+    if type(t) is float:
+        return t
     if type(t) is int:
         return t
     if type(t) is tuple:
@@ -354,7 +358,13 @@ def evalExpr(t):
                 else:
                     return call_function(evalExpr(t[1]), None)
             case '+':
-                return evalExpr(t[1]) + evalExpr(t[2])
+                first = evalExpr(t[1])
+                second = evalExpr(t[2])
+                if type(first) is str and type(second) is not str:
+                    return first + str(second)
+                if type(second) is str and type(first) is not str:
+                    return second + str(first)
+                return first + second
             case '*':
                 return evalExpr(t[1]) * evalExpr(t[2])
             case '-':
