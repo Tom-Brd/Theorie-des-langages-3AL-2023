@@ -29,11 +29,11 @@ reserved = {
 tokens = [
              'NUMBER', 'MINUS',
              'PLUS', 'TIMES', 'DIVIDE',
-             'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET',
+             'LPAREN', 'RPAREN', 'LCURLYBRACKET', 'RCURLYBRACKET', "LBRACKET", "RBRACKET",
              'AND', 'OR', 'COMMA', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS','NOTEQUALS', 'GREATEREQUALS', 'LESSEQUALS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
              'TRUE', 'FALSE',
-             "CHARCHAIN", "SIMPLE_COMMENT", "MULTI_COMMENT",
+             "CHARCHAIN", "SIMPLE_COMMENT", "MULTI_COMMENT"
          ] + list(reserved.values())
 
 # Tokens
@@ -43,8 +43,10 @@ t_TIMES = r'\*'
 t_DIVIDE = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_LBRACKET = r'\{'
-t_RBRACKET = r'\}'
+t_LCURLYBRACKET = r'\{'
+t_RCURLYBRACKET = r'\}'
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
 t_AND = r'&'
 t_OR = r'\|'
 t_COMMA = r','
@@ -146,8 +148,8 @@ def p_bloc(p):
 
 
 def p_statement_function(p):
-    '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LBRACKET bloc RBRACKET
-                | FUNCTION RETURNTYPE NAME LPAREN RPAREN LBRACKET bloc RBRACKET'''
+    '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LCURLYBRACKET bloc RCURLYBRACKET
+                | FUNCTION RETURNTYPE NAME LPAREN RPAREN LCURLYBRACKET bloc RCURLYBRACKET'''
     if len(p) == 10:
         p[0] = ('function', p[2], p[3], p[5], p[8])
     else:
@@ -170,8 +172,8 @@ def p_statement_expr(p):
 
 
 def p_statement_if(p):
-    '''statement : IF LPAREN expression RPAREN LBRACKET bloc RBRACKET
-        | IF LPAREN expression RPAREN LBRACKET bloc RBRACKET ELSE LBRACKET bloc RBRACKET'''
+    '''statement : IF LPAREN expression RPAREN LCURLYBRACKET bloc RCURLYBRACKET
+        | IF LPAREN expression RPAREN LCURLYBRACKET bloc RCURLYBRACKET ELSE LCURLYBRACKET bloc RCURLYBRACKET'''
     if len(p) == 8:
         p[0] = ('if', p[3], p[6])
     else:
@@ -179,12 +181,12 @@ def p_statement_if(p):
 
 
 def p_statement_while(p):
-    '''statement : WHILE LPAREN expression RPAREN LBRACKET bloc RBRACKET'''
+    '''statement : WHILE LPAREN expression RPAREN LCURLYBRACKET bloc RCURLYBRACKET'''
     p[0] = ('while', p[3], p[6])
 
 
 def p_statement_for(p):
-    '''statement : FOR LPAREN statement SEMICOLON expression SEMICOLON statement RPAREN LBRACKET bloc RBRACKET'''
+    '''statement : FOR LPAREN statement SEMICOLON expression SEMICOLON statement RPAREN LCURLYBRACKET bloc RCURLYBRACKET'''
     print(p[3], p[5], p[7], p[10])
     p[0] = ('for', p[3], p[5], p[7], p[10])
 
@@ -198,6 +200,23 @@ def p_statement_scan(p):
     '''statement : NAME ASSIGN SCAN LPAREN RPAREN'''
     p[0] = ('scan', p[1])
 
+
+def p_expression_array_element(p):
+    '''ARRAYELEMENT : expression
+                    | expression COMMA ARRAYELEMENT'''
+    if len(p) == 2:
+        p[0] = ('array_element', p[1])
+    else:
+        p[0] = ('array_element', p[1], p[3])
+
+
+def p_expression_array(p):
+    '''expression : LBRACKET ARRAYELEMENT RBRACKET
+        | LBRACKET RBRACKET'''
+    if len(p) == 4:
+        p[0] = ('array', p[2])
+    else:
+        p[0] = ('array')
 
 def p_statement_assign(p):
     '''statement : TYPE NAME ASSIGN expression
@@ -225,7 +244,6 @@ def p_expression_number(p):
     'expression : NUMBER'
     p[0] = p[1]
 
-
 def p_expression_boolean(p):
     'expression : BOOLEAN'
     p[0] = bool(p[1])
@@ -240,7 +258,6 @@ def p_expression_name(p):
 def p_expression_funcparams(p):
     '''FUNCPARAMS : expression
                 | expression COMMA FUNCPARAMS'''
-
     if len(p) == 2:
         p[0] = ('funcparams', p[1])
     else:
@@ -271,6 +288,11 @@ def p_type_definition(p):
             | CHAR
             | STRING
             | BOOL'''
+    p[0] = p[1]
+
+
+def p_return_type_array(p):
+    '''TYPEARRAY : TYPE LBRACKET RBRACKET'''
     p[0] = p[1]
 
 
@@ -477,6 +499,8 @@ def evalSyntax(t):
             # t[2] = name
             # t[3] = value
             case 'declare':
+                if t[3] == '[]':
+
                 if exist_in_scope(t[2]):
                     exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
                 else:
