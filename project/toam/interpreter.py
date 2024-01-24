@@ -144,9 +144,6 @@ def p_bloc(p):
             p[0] = ('bloc', p[1], 'empty')
 
 
-
-
-
 def p_statement_function(p):
     '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LCURLYBRACKET bloc RCURLYBRACKET
                 | FUNCTION RETURNTYPE NAME LPAREN RPAREN LCURLYBRACKET bloc RCURLYBRACKET'''
@@ -199,24 +196,6 @@ def p_statement_toamScan(p):
 def p_statement_scan(p):
     '''statement : NAME ASSIGN SCAN LPAREN RPAREN'''
     p[0] = ('scan', p[1])
-
-
-def p_expression_array_element(p):
-    '''ARRAYELEMENT : expression
-                    | expression COMMA ARRAYELEMENT'''
-    if len(p) == 2:
-        p[0] = ('array_element', p[1])
-    else:
-        p[0] = ('array_element', p[1], p[3])
-
-
-def p_expression_array(p):
-    '''expression : LBRACKET ARRAYELEMENT RBRACKET
-        | LBRACKET RBRACKET'''
-    if len(p) == 4:
-        p[0] = ('array', p[2])
-    else:
-        p[0] = ('array')
 
 def p_statement_assign(p):
     '''statement : TYPE NAME ASSIGN expression
@@ -288,11 +267,6 @@ def p_type_definition(p):
             | CHAR
             | STRING
             | BOOL'''
-    p[0] = p[1]
-
-
-def p_return_type_array(p):
-    '''TYPEARRAY : TYPE LBRACKET RBRACKET'''
     p[0] = p[1]
 
 
@@ -499,8 +473,6 @@ def evalSyntax(t):
             # t[2] = name
             # t[3] = value
             case 'declare':
-                if t[3] == '[]':
-
                 if exist_in_scope(t[2]):
                     exit(f"TOAM ERROR : Variable '{t[2]}' déjà déclarée")
                 else:

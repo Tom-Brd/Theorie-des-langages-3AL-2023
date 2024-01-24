@@ -4,3 +4,7 @@ project/toam/others/Digraph.gv.pdf
 project/toam/others/parser.out
 project/toam/others/parsetab.py
 __pycache__
+*.pdf
+project/toam/parser.out
+*.out
+project/toam/parsetab.py

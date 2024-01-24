@@ -3,7 +3,6 @@ function int[] getTab(){
     return tab;
 };
 
-
 int tab[] = getTab();
 tab[0] = 20;
 print(tab[0]);
