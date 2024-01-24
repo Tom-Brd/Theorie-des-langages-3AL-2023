@@ -121,7 +121,7 @@ def p_start(p):
     'start : bloc'
     p[0] = ('START', p[1])
     print('Arbre de dérivation = ', p[0])
-    # printTreeGraph(p[1])
+    printTreeGraph(p[1])
     # evalSyntax(p[1])
     global runtime_stack
     runtime_stack = [{}]
@@ -166,6 +166,11 @@ def p_statement_expr(p):
     '''statement : PRINT LPAREN expression RPAREN
         | PRINT LPAREN CHARCHAIN RPAREN'''
     p[0] = ('print', p[3])
+
+
+def p_statement_add_array(p):
+    '''statement : NAME LBRACKET RBRACKET ASSIGN expression'''
+    p[0] = ('add_array', p[1], p[5])
 
 
 def p_statement_if(p):
@@ -233,6 +238,38 @@ def p_expression_name(p):
     # p[0] = names[p[1]]
     p[0] = p[1]
 
+def p_array_declaration(p):
+    '''statement : ARRAYTYPE NAME ASSIGN array_values
+                   | ARRAYTYPE NAME'''
+    if len(p) == 5:
+        p[0] = ('declare', p[1], p[2], p[4])
+    else:
+        p[0] = ('declare', p[1], p[2], 'empty_array')
+
+
+def p_array_values(p):
+    '''array_values : LBRACKET values RBRACKET
+                    | LBRACKET RBRACKET'''
+    if len(p) == 4:
+        p[0] = ('array_values', p[2])
+    else:
+        p[0] = ('array_values', 'empty_array')
+
+def p_values(p):
+    '''values : values COMMA expression
+              | expression'''
+    if len(p) == 4:
+        p[0] = ('values', p[1], p[3])
+    else:
+        p[0] = ('values', p[1])
+
+def p_set_array_value(p):
+    'statement : NAME LBRACKET expression RBRACKET ASSIGN expression'
+    p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
+
+def p_get_array_value(p):
+    'expression : NAME LBRACKET expression RBRACKET'
+    p[0] = ('get_array_value_at_index', p[1], p[3])
 
 def p_expression_funcparams(p):
     '''FUNCPARAMS : expression
@@ -269,9 +306,17 @@ def p_type_definition(p):
             | BOOL'''
     p[0] = p[1]
 
+def p_array_type_definition(p):
+    '''ARRAYTYPE : INT LBRACKET RBRACKET
+            | FLOAT LBRACKET RBRACKET
+            | CHAR LBRACKET RBRACKET
+            | STRING LBRACKET RBRACKET
+            | BOOL LBRACKET RBRACKET'''
+    p[0] = p[1]
 
 def p_return_type(p):
     '''RETURNTYPE : TYPE
+            | ARRAYTYPE
             | VOID'''
     p[0] = p[1]
 
@@ -329,6 +374,14 @@ def p_error(p):
     print(p)
     print("Syntax error at '%s'" % p.value)
 
+def evalArrayValues(t):
+    if type(t) is tuple:
+        if t[0] == 'values':
+            if len(t) == 2:
+                return [evalExpr(t[1])]
+            else:
+                return evalArrayValues(t[1]) +[evalExpr(t[2])]
+    return []
 
 def evalExpr(t):
     # print('eval de ', t)
@@ -347,6 +400,17 @@ def evalExpr(t):
         return t
     if type(t) is tuple:
         match t[0]:
+            case 'get_array_value_at_index':
+                # p[0] = ('get_array_value_at_index', p[1], p[3])
+                array = get_variable(t[1])
+                index = evalExpr(t[2])
+                if type(array) is not list:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                if type(index) is not int:
+                    exit(f"TOAM ERROR : L'index d'accès doit être un entier")
+                if index >= len(array):
+                    exit(f"TOAM ERROR : L'index d'accès doit être inférieur à la taille du tableau")
+                return array[index]
             case 'funcparams':
                 if len(t) == 2:
                     return evalExpr(t[1])
@@ -566,8 +630,32 @@ def evalInst(t):
                 # t[3] = tuple de paramètres
                 # t[4] = bloc d'instruction
                 functions[t[2]] = (t[1], t[3], t[4])
+            case 'add_array':
+                if exist_in_scope(t[1]):
+                    if type(get_variable(t[1])) is not list:
+                        exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                    else:
+                        array = get_variable(t[1])
+                        array.append(evalExpr(t[2]))
+                        set_variable(t[1], array)
+            case 'set_array_value_at_index':
+                # p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
+                array = get_variable(t[1])
+                index = evalExpr(t[2])
+                value = evalExpr(t[3])
+                if type(array) is not list:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                if type(index) is not int:
+                    exit(f"TOAM ERROR : L'index d'accès doit être un entier")
+                if index >= len(array):
+                    exit(f"TOAM ERROR : L'index d'accès doit être inférieur à la taille du tableau")
+                array[index] = value
+                set_variable(t[1], array)
             case 'declare':
-                define_variable(t[2], evalExpr(t[3]))
+                if type(t[3]) is tuple and t[3][0] == "array_values":
+                    define_variable(t[2], evalArrayValues(t[3][1]))
+                else:
+                    define_variable(t[2], evalExpr(t[3]))
             case 'assign':
                 set_variable(t[1], evalExpr(t[2]))
             case 'print':
