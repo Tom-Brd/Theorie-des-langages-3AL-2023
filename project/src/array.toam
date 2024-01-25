@@ -1,14 +1,22 @@
-function int[] getTab(){
-    int tab[] = [];
+function int[] getTab() {
+    int[] tab = [];
     return tab;
 };
 
-int tab[] = getTab();
-tab[0] = 20;
+int[] tab = getTab();
+tab[] = 20;
 print(tab[0]);
-print(len(tab))
+// print(len(tab));
+int[] tab = [1, 2, 3];
+print(tab[0]);
+tab[0] = 10;
+print(tab);
 
-// Créer la fonction len qui renvoie la longueur d'un tableau, d'une chaine de caractères ou le nombre de digit d'un int
-// Créer le lexeur pour les syntaxes évoquées plus haut
-// Créer les types de retour int[]
-// Créer les variables tab[]
+
+function int[] test() {
+    int[] oui = [1, 2, 3];
+    return oui;
+};
+
+int[] oui = [test(),test(),test()];
+print(oui);
