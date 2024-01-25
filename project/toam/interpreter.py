@@ -253,10 +253,15 @@ def p_array_declaration(p):
 
 
 def p_array_values(p):
-    '''array_values : LBRACKET values RBRACKET
+    '''array_values : array_values COMMA array_values
+                    | LBRACKET values RBRACKET
                     | LBRACKET RBRACKET'''
     if len(p) == 4:
-        p[0] = ('array_values', p[2])
+        if p[2][0] == 'values':
+            p[0] = ('array_values', p[2])
+        else:
+            # we are in the case array_values COMMA array_values
+            p[0] = ('array_values', p[1], p[3])
     else:
         p[0] = ('array_values', 'empty_array')
 
@@ -392,14 +397,15 @@ def p_expression_incr_decr(p):
 def p_error(p):
     print(p)
     print("Syntax error at '%s'" % p.value)
+    
 
-def evalArrayValues(t):
+def eval_array_values(t):
     if type(t) is tuple:
         if t[0] == 'values':
             if len(t) == 2:
                 return [evalExpr(t[1])]
             else:
-                return evalArrayValues(t[1]) +[evalExpr(t[2])]
+                return eval_array_values(t[1]) +[evalExpr(t[2])]
     return []
 
 def evalExpr(t):
@@ -673,10 +679,13 @@ def evalInst(t):
             case 'declare':
                 if type(t[3]) is tuple:
                     if t[3][0] == "array_values":
-                        define_variable(t[2], evalArrayValues(t[3][1]))
+                        if len(t[3]) == 2:
+                            define_variable(t[2], eval_array_values(t[3][1]))
+                        else:
+                            define_variable(t[2], eval_array_values(t[3][1]))
                     elif t[3][0] == 'func':
                         # ('declare', p[1], p[2], ('func', p[4]))
-                        define_variable(t[2], evalArrayValues(evalExpr(t[3][1])))
+                        define_variable(t[2], eval_array_values(evalExpr(t[3][1])))
                 else:
                     define_variable(t[2], evalExpr(t[3]))
             case 'assign':
