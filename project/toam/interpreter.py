@@ -121,7 +121,7 @@ def p_start(p):
     'start : bloc'
     p[0] = ('START', p[1])
     print('Arbre de dérivation = ', p[0])
-    printTreeGraph(p[1])
+    # printTreeGraph(p[1])
     # evalSyntax(p[1])
     global runtime_stack
     runtime_stack = [{}]
@@ -240,9 +240,14 @@ def p_expression_name(p):
 
 def p_array_declaration(p):
     '''statement : ARRAYTYPE NAME ASSIGN array_values
-                   | ARRAYTYPE NAME'''
+                   | ARRAYTYPE NAME
+                   | ARRAYTYPE NAME ASSIGN FUNCCALL
+                   '''
     if len(p) == 5:
-        p[0] = ('declare', p[1], p[2], p[4])
+        if p[4][0] == 'array_values':
+            p[0] = ('declare', p[1], p[2], p[4])
+        else:
+            p[0] = ('declare', p[1], p[2], ('func', p[4]))
     else:
         p[0] = ('declare', p[1], p[2], 'empty_array')
 
@@ -278,6 +283,20 @@ def p_expression_funcparams(p):
         p[0] = ('funcparams', p[1])
     else:
         p[0] = ('funcparams', p[3], p[1])
+
+
+def expr_to_call_function(p):
+    '''expression: FUNCCALL'''
+    p[0] = p[1]
+
+
+def p_funccall(p):
+    '''FUNCCALL : NAME LPAREN RPAREN
+        | NAME LPAREN FUNCPARAMS RPAREN'''
+    if len(p) == 4:
+        p[0] = ('call_function', p[1])
+    else:
+        p[0] = ('call_function', p[1], p[3])
 
 
 def p_expression_call_function(p):
@@ -652,8 +671,12 @@ def evalInst(t):
                 array[index] = value
                 set_variable(t[1], array)
             case 'declare':
-                if type(t[3]) is tuple and t[3][0] == "array_values":
-                    define_variable(t[2], evalArrayValues(t[3][1]))
+                if type(t[3]) is tuple:
+                    if t[3][0] == "array_values":
+                        define_variable(t[2], evalArrayValues(t[3][1]))
+                    elif t[3][0] == 'func':
+                        # ('declare', p[1], p[2], ('func', p[4]))
+                        define_variable(t[2], evalArrayValues(evalExpr(t[3][1])))
                 else:
                     define_variable(t[2], evalExpr(t[3]))
             case 'assign':
