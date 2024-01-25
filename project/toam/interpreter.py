@@ -24,6 +24,7 @@ reserved = {
     'false': 'FALSE',
     'function': 'FUNCTION',
     'return': 'RETURN',
+    'len': 'LEN',
 }
 
 tokens = [
@@ -171,6 +172,11 @@ def p_statement_expr(p):
 def p_statement_add_array(p):
     '''statement : NAME LBRACKET RBRACKET ASSIGN expression'''
     p[0] = ('add_array', p[1], p[5])
+
+
+def p_expr_len_array(p):
+    '''expression : LEN LPAREN expression RPAREN'''
+    p[0] = ('len_array', p[3])
 
 
 def p_statement_if(p):
@@ -425,6 +431,12 @@ def evalExpr(t):
         return t
     if type(t) is tuple:
         match t[0]:
+            case 'len_array':
+                if exist_in_scope(t[1]):
+                    if type(get_variable(t[1])) is not list:
+                        exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                    else:
+                        return len(get_variable(t[1]))
             case 'get_array_value_at_index':
                 # p[0] = ('get_array_value_at_index', p[1], p[3])
                 array = get_variable(t[1])
@@ -677,15 +689,10 @@ def evalInst(t):
                 array[index] = value
                 set_variable(t[1], array)
             case 'declare':
-                if type(t[3]) is tuple:
-                    if t[3][0] == "array_values":
-                        if len(t[3]) == 2:
-                            define_variable(t[2], eval_array_values(t[3][1]))
-                        else:
-                            define_variable(t[2], eval_array_values(t[3][1]))
-                    elif t[3][0] == 'func':
-                        # ('declare', p[1], p[2], ('func', p[4]))
-                        define_variable(t[2], eval_array_values(evalExpr(t[3][1])))
+                if type(t[3]) is tuple and t[3][0] == "array_values":
+                    define_variable(t[2], eval_array_values(t[3][1]))
+                elif type(t[3]) is tuple and t[3][0] == 'func':
+                    define_variable(t[2], eval_array_values(evalExpr(t[3][1])))
                 else:
                     define_variable(t[2], evalExpr(t[3]))
             case 'assign':

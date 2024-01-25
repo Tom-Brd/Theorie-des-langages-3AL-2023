@@ -1,22 +1,7 @@
-/* int[] oui = [1, 2, 3];
-oui[2] = 4;
-for (int i = 0; i < 3; i++) {
-    print(oui[i]);
+function int get() {
+    return 1;
 };
 
-oui[2] = 5;
-
-oui[] = 10;
-
-print(oui);
-*/
-
-function int[] test() {
-    int[] oui = [1, 2, 3];
-    return oui;
-};
-
-int[] oui = [test(),test(),test()];
-
-print(oui);
-print(test());
+int[] tab = [1, 2, 3];
+int coucou = len(tab);
+print(coucou);
