@@ -2,6 +2,12 @@ function int get() {
     return 1;
 };
 
-int[] tab = [1, 2, 3];
+function int[] getTab() {
+    int[] tab = [1, 2, 3];
+    return tab;
+};
+
+int[] tab = getTab();
+print(tab);
 int coucou = len(tab);
 print(coucou);

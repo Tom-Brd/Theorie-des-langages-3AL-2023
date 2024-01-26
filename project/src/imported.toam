@@ -1,0 +1,6 @@
+function void helloWorld() {
+    print("Hello World!");
+};
+
+int a = 0;
+print(a);

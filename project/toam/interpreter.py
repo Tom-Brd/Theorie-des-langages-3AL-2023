@@ -25,6 +25,7 @@ reserved = {
     'function': 'FUNCTION',
     'return': 'RETURN',
     'len': 'LEN',
+    'import': 'IMPORT',
 }
 
 tokens = [
@@ -144,6 +145,10 @@ def p_bloc(p):
         else:
             p[0] = ('bloc', p[1], 'empty')
 
+
+def p_statement_import(p):
+    '''statement : IMPORT CHARCHAIN'''
+    p[0] = ('import', p[2])
 
 def p_statement_function(p):
     '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LCURLYBRACKET bloc RCURLYBRACKET
@@ -411,7 +416,7 @@ def eval_array_values(t):
             if len(t) == 2:
                 return [evalExpr(t[1])]
             else:
-                return eval_array_values(t[1]) +[evalExpr(t[2])]
+                return eval_array_values(t[1]) + [evalExpr(t[2])]
     return []
 
 def evalExpr(t):
@@ -651,6 +656,8 @@ def evalSyntax(t):
 def evalInst(t):
     if type(t) is tuple:
         match t[0]:
+            case 'import':
+                evalInst(toamImport(t[1]))
             case 'return':
                 if t[1] == "empty":
                     return "empty"
@@ -692,7 +699,7 @@ def evalInst(t):
                 if type(t[3]) is tuple and t[3][0] == "array_values":
                     define_variable(t[2], eval_array_values(t[3][1]))
                 elif type(t[3]) is tuple and t[3][0] == 'func':
-                    define_variable(t[2], eval_array_values(evalExpr(t[3][1])))
+                    define_variable(t[2], evalExpr(t[3][1]))
                 else:
                     define_variable(t[2], evalExpr(t[3]))
             case 'assign':
@@ -985,3 +992,7 @@ yacc.yacc()
 def toam(path):
     s = open(path, "r").read()
     yacc.parse(s)
+
+def toamImport(path):
+    s = open(path.strip("\""), "r").read()
+    return yacc.parse(s)

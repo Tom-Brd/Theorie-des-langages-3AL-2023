@@ -1,0 +1,9 @@
+import "project/src/utils.toam";
+
+int[] tab = initArray(10);
+print(tab);
+print(len(tab));
+
+print(pow(2, 3));
+
+hello();
