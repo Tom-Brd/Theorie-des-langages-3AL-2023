@@ -32,9 +32,10 @@ tokens = [
              'NUMBER', 'MINUS',
              'PLUS', 'TIMES', 'DIVIDE',
              'LPAREN', 'RPAREN', 'LCURLYBRACKET', 'RCURLYBRACKET', "LBRACKET", "RBRACKET",
-             'AND', 'OR', 'COMMA', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS','NOTEQUALS', 'GREATEREQUALS', 'LESSEQUALS',
+             'AND', 'OR', 'COMMA', 'SEMICOLON', 'NAME', 'ASSIGN', 'GREATER', 'LESS', 'EQUALS', 'NOTEQUALS',
+             'GREATEREQUALS', 'LESSEQUALS',
              'INCREMENT', 'DECREMENT', 'INCREASE', 'DECREASE',
-             'TRUE', 'FALSE',
+             'TRUE', 'FALSE', 'AMPERSAND',
              "CHARCHAIN", "SIMPLE_COMMENT", "MULTI_COMMENT"
          ] + list(reserved.values())
 
@@ -49,7 +50,7 @@ t_LCURLYBRACKET = r'\{'
 t_RCURLYBRACKET = r'\}'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
-t_AND = r'&'
+t_AND = r'&&'
 t_OR = r'\|'
 t_COMMA = r','
 t_SEMICOLON = r';'
@@ -66,6 +67,7 @@ t_INCREASE = r'\+='
 t_DECREASE = r'-='
 t_SIMPLE_COMMENT = r'//.*'
 t_MULTI_COMMENT = r'/\*(.|\n)*?\*/'
+t_AMPERSAND = r'&'
 
 
 def t_NUMBER(t):
@@ -105,6 +107,7 @@ def t_error(t):
 import ply.lex as lex
 
 lex.lex()
+
 
 def toamPrint(string):
     print("TOAM PRINT : ", string)
@@ -150,6 +153,7 @@ def p_statement_import(p):
     '''statement : IMPORT CHARCHAIN'''
     p[0] = ('import', p[2])
 
+
 def p_statement_function(p):
     '''statement : FUNCTION RETURNTYPE NAME LPAREN PARAMS RPAREN LCURLYBRACKET bloc RCURLYBRACKET
                 | FUNCTION RETURNTYPE NAME LPAREN RPAREN LCURLYBRACKET bloc RCURLYBRACKET'''
@@ -159,9 +163,14 @@ def p_statement_function(p):
         p[0] = ('function', p[2], p[3], 'empty_params', p[7])
 
 
+def p_type_params(p):
+    '''TYPEPARAM : ARRAYTYPE
+                | TYPE'''
+    p[0] = p[1]
+
 def p_params(p):
-    '''PARAMS : TYPE NAME
-                | TYPE NAME COMMA PARAMS'''
+    '''PARAMS : TYPEPARAM NAME
+                | TYPEPARAM NAME COMMA PARAMS'''
     if len(p) == 3:
         p[0] = ('params', p[1], p[2])
     else:
@@ -213,11 +222,16 @@ def p_statement_scan(p):
     '''statement : NAME ASSIGN SCAN LPAREN RPAREN'''
     p[0] = ('scan', p[1])
 
+
 def p_statement_assign(p):
     '''statement : TYPE NAME ASSIGN expression
+        | TIMES NAME ASSIGN expression
         | NAME ASSIGN expression'''
     if len(p) == 5:  # type + assign
-        p[0] = ('declare', p[1], p[2], p[4])  # type ; name ; value
+        if p[1] == '*':
+            p[0] = ('assign_by_reference', p[2], p[4])
+        else:
+            p[0] = ('declare', p[1], p[2], p[4])  # type ; name ; value
     else:  # re assign
         p[0] = ('assign', p[1], p[3])  # name ; value
 
@@ -239,6 +253,7 @@ def p_expression_number(p):
     'expression : NUMBER'
     p[0] = p[1]
 
+
 def p_expression_boolean(p):
     'expression : BOOLEAN'
     p[0] = bool(p[1])
@@ -248,6 +263,7 @@ def p_expression_name(p):
     'expression : NAME'
     # p[0] = names[p[1]]
     p[0] = p[1]
+
 
 def p_array_declaration(p):
     '''statement : ARRAYTYPE NAME ASSIGN array_values
@@ -276,6 +292,7 @@ def p_array_values(p):
     else:
         p[0] = ('array_values', 'empty_array')
 
+
 def p_values(p):
     '''values : values COMMA expression
               | expression'''
@@ -284,13 +301,16 @@ def p_values(p):
     else:
         p[0] = ('values', p[1])
 
+
 def p_set_array_value(p):
     'statement : NAME LBRACKET expression RBRACKET ASSIGN expression'
     p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
 
+
 def p_get_array_value(p):
     'expression : NAME LBRACKET expression RBRACKET'
     p[0] = ('get_array_value_at_index', p[1], p[3])
+
 
 def p_expression_funcparams(p):
     '''FUNCPARAMS : expression
@@ -338,16 +358,26 @@ def p_type_definition(p):
             | FLOAT
             | CHAR
             | STRING
-            | BOOL'''
-    p[0] = p[1]
+            | BOOL
+            | TYPE TIMES'''
+    if len(p) == 3:
+        p[0] = p[1] + p[2]
+    else:
+        p[0] = p[1]
+
 
 def p_array_type_definition(p):
     '''ARRAYTYPE : INT LBRACKET RBRACKET
             | FLOAT LBRACKET RBRACKET
             | CHAR LBRACKET RBRACKET
             | STRING LBRACKET RBRACKET
-            | BOOL LBRACKET RBRACKET'''
-    p[0] = p[1]
+            | BOOL LBRACKET RBRACKET
+            | ARRAYTYPE TIMES'''
+    if len(p) == 4:
+        p[0] = p[1] + p[2] + p[3]
+    else:
+        p[0] = p[1] + p[2]
+
 
 def p_return_type(p):
     '''RETURNTYPE : TYPE
@@ -370,6 +400,16 @@ def p_boolean_definition(p):
     '''BOOLEAN : TRUE
                 | FALSE'''
     p[0] = p[1]
+
+
+def p_expression_reference(p):
+    '''expression : AMPERSAND NAME'''
+    p[0] = ('reference', p[2])
+
+
+def p_expression_dereference(p):
+    '''expression : TIMES NAME'''
+    p[0] = ('dereference', p[2])
 
 
 def p_expression_charchain(p):
@@ -408,7 +448,7 @@ def p_expression_incr_decr(p):
 def p_error(p):
     print(p)
     print("Syntax error at '%s'" % p.value)
-    
+
 
 def eval_array_values(t):
     if type(t) is tuple:
@@ -418,6 +458,7 @@ def eval_array_values(t):
             else:
                 return eval_array_values(t[1]) + [evalExpr(t[2])]
     return []
+
 
 def evalExpr(t):
     # print('eval de ', t)
@@ -436,6 +477,16 @@ def evalExpr(t):
         return t
     if type(t) is tuple:
         match t[0]:
+            case 'reference':
+                if exist_in_scope(t[1]):
+                    return get_address_of_variable(t[1])
+                else:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas déclarée")
+            case 'dereference':
+                if exist_in_scope(t[1]):
+                    return get_variable_by_address(get_variable(t[1]))
+                else:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas déclarée")
             case 'len_array':
                 if exist_in_scope(t[1]):
                     if type(get_variable(t[1])) is not list:
@@ -479,7 +530,7 @@ def evalExpr(t):
                 if t[2] == 0:
                     exit("TOAM ERROR : Division par 0 impossible")
                 return evalExpr(t[1]) / evalExpr(t[2])
-            case '&':
+            case '&&':
                 return evalExpr(t[1]) & evalExpr(t[2])
             case '|':
                 return evalExpr(t[1]) | evalExpr(t[2])
@@ -813,8 +864,10 @@ is_in_function = False
 def createFunctionStack():
     functions_stack.append([{}])
 
+
 def exitFunctionStack():
     functions_stack.pop()
+
 
 def setInGlobalScope(boolean):
     global is_global_scope
@@ -825,6 +878,8 @@ def isInGlobalScope():
     global is_global_scope
     return is_global_scope
 
+# ('funcparams', ('funcparams', ('funcparams', 4), ('reference', 'tab')), 6)
+# TODO : Gérer + de 3 paramètres et les références
 def declare_variables_function(parameters, call_params, index):
     if type(call_params) is tuple:
         define_variable(parameters[2], call_params[index])
@@ -885,16 +940,6 @@ def get_function(name):
     # exit(f"TOAM ERROR : La fonction '{name}' n'existe pas")
 
 
-"""
-ON RENTRE DANS UN BLOC QUI NECESSITE UN SCOPE :
-    - EST CE QUE LE PRECEDENT SCOPE EST LE SCOPE GLOBAL ?
-        OUI:
-            - On set le is_global à False
-            - On s'assure de bien le reset à True à la fin du bloc
-        NON :
-            - On ferma sa gueule, aucune action en début ou en fin
-"""
-
 def isInFunction():
     global is_in_function
     return is_in_function
@@ -933,29 +978,66 @@ def exist_in_scope(name):
 def update_in_scope(stack, name, value):
     for scope in reversed(stack):
         if name in scope:
-            scope[name] = value
+            scope[name][0] = value
             return True
     return False
 
 
 def define_variable(name, value):
     if isInGlobalScope():
-        global_scope[name] = value
+        global_scope[name] = (value,)
     elif isInFunction():
-        functions_stack[-1][-1][name] = value
+        functions_stack[-1][-1][name] = (value,)
     else:
-        runtime_stack[-1][name] = value
+        runtime_stack[-1][name] = (value,)
+
+
+def get_address_of_var_in_global_scope(name):
+    if name in global_scope:
+        return global_scope[name].id()
+    exit(f"Variable non définie: {name}")
+
+
+def get_address_of_variable(name):
+    if isInGlobalScope():
+        return get_address_of_var_in_global_scope(name)
+    elif isInFunction():
+        for scope in reversed(functions_stack[-1]):
+            if name in scope:
+                return scope[name].id()
+    else:
+        for scope in reversed(runtime_stack):
+            if name in scope:
+                return scope[name].id()
+    return get_address_of_var_in_global_scope(name)
+
+
+def set_variable_by_address(address, value):
+    if isInGlobalScope():
+        for tpl in global_scope:
+            if tpl.id() == address:
+                tpl[0] = value
+    elif isInFunction():
+        for scope in reversed(functions_stack[-1]):
+            for tpl in scope:
+                if tpl.id() == address:
+                    tpl[0] = value
+    else:
+        for scope in reversed(runtime_stack):
+            for tpl in scope:
+                if tpl.id() == address:
+                    tpl[0] = value
 
 
 def set_variable(name, value):
     if name in global_scope or isInGlobalScope():
-        global_scope[name] = value
+        global_scope[name][0] = value
     elif isInFunction():
         if not update_in_scope(functions_stack[-1], name, value):
-            functions_stack[-1][-1][name] = value
+            functions_stack[-1][-1][name][0] = value
     else:
         if not update_in_scope(runtime_stack, name, value):
-            runtime_stack[-1][name] = value
+            runtime_stack[-1][name][0] = value
 
 
 def get_variable(name):
@@ -964,17 +1046,36 @@ def get_variable(name):
     elif isInFunction():
         for scope in reversed(functions_stack[-1]):
             if name in scope:
-                return scope[name]
+                return scope[name][0]
     else:
         for scope in reversed(runtime_stack):
             if name in scope:
-                return scope[name]
+                return scope[name][0]
     return get_var_in_global_scope(name)
+
+
+def get_variable_by_address(address):
+    if isInGlobalScope():
+        for tpl in global_scope:
+            if tpl.id() == address:
+                return tpl[0]
+    elif isInFunction():
+        for scope in reversed(functions_stack[-1]):
+            for tpl in scope:
+                if tpl.id() == address:
+                    return tpl[0]
+    else:
+        for scope in reversed(runtime_stack):
+            for tpl in scope:
+                if tpl.id() == address:
+                    return tpl[0]
+    error(f"Variable non définie sur l'adresse: {address}")
+    exit(1)
 
 
 def get_var_in_global_scope(name):
     if name in global_scope:
-        return global_scope[name]
+        return global_scope[name][0]
     exit(f"Variable non définie: {name}")
 
 
@@ -989,9 +1090,11 @@ DEBUG = False
 
 yacc.yacc()
 
+
 def toam(path):
     s = open(path, "r").read()
     yacc.parse(s)
+
 
 def toamImport(path):
     s = open(path.strip("\""), "r").read()
