@@ -184,9 +184,12 @@ def p_statement_expr(p):
 
 
 def p_statement_add_array(p):
-    '''statement : NAME LBRACKET RBRACKET ASSIGN expression'''
-    p[0] = ('add_array', p[1], p[5])
-
+    '''statement : NAME LBRACKET RBRACKET ASSIGN expression
+        | TIMES NAME LBRACKET RBRACKET ASSIGN expression'''
+    if len(p) == 6:
+        p[0] = ('add_array', p[1], p[5])
+    else:
+        p[0] = ('add_array_by_reference', p[2], p[6])
 
 def p_expr_len_array(p):
     '''expression : LEN LPAREN expression RPAREN'''
@@ -303,13 +306,22 @@ def p_values(p):
 
 
 def p_set_array_value(p):
-    'statement : NAME LBRACKET expression RBRACKET ASSIGN expression'
-    p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
+    '''statement : NAME LBRACKET expression RBRACKET ASSIGN expression
+                | TIMES NAME LBRACKET expression RBRACKET ASSIGN expression
+    '''
+    if len(p) == 7:
+        p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
+    else:
+        p[0] = ('set_array_value_at_index_by_reference', p[2], p[4], p[7])
 
 
 def p_get_array_value(p):
-    'expression : NAME LBRACKET expression RBRACKET'
-    p[0] = ('get_array_value_at_index', p[1], p[3])
+    '''expression : NAME LBRACKET expression RBRACKET
+                | TIMES NAME LBRACKET expression RBRACKET'''
+    if len(p) == 5:
+        p[0] = ('get_array_value_at_index', p[1], p[3])
+    else:
+        p[0] = ('get_array_value_at_index_by_reference', p[2], p[4])
 
 
 def p_expression_funcparams(p):
@@ -488,11 +500,27 @@ def evalExpr(t):
                 else:
                     exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas déclarée")
             case 'len_array':
+                if t[1][0] == 'dereference':
+                    array = get_variable_by_address(get_variable(t[1][1]))
+                    if type(array) is not list:
+                        exit(f"TOAM ERROR : La variable '{array}' n'est pas un tableau")
+                    else:
+                        return len(array)
                 if exist_in_scope(t[1]):
                     if type(get_variable(t[1])) is not list:
                         exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
                     else:
                         return len(get_variable(t[1]))
+            case 'get_array_value_at_index_by_reference':
+                array = get_variable_by_address(evalExpr(t[1]))
+                index = evalExpr(t[2])
+                if type(array) is not list:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                if type(index) is not int:
+                    exit(f"TOAM ERROR : L'index d'accès doit être un entier")
+                if index >= len(array):
+                    exit(f"TOAM ERROR : L'index d'accès doit être inférieur à la taille du tableau")
+                return array[index]
             case 'get_array_value_at_index':
                 # p[0] = ('get_array_value_at_index', p[1], p[3])
                 array = get_variable(t[1])
@@ -725,6 +753,14 @@ def evalInst(t):
                 # t[3] = tuple de paramètres
                 # t[4] = bloc d'instruction
                 functions[t[2]] = (t[1], t[3], t[4])
+            case 'add_array_by_reference':
+                if exist_in_scope(t[1]):
+                    array = get_variable_by_address(get_variable(t[1]))
+                    if type(array) is not list:
+                        exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                    else:
+                        array.append(evalExpr(t[2]))
+                        # set_variable(t[1], array)
             case 'add_array':
                 if exist_in_scope(t[1]):
                     if type(get_variable(t[1])) is not list:
@@ -732,7 +768,18 @@ def evalInst(t):
                     else:
                         array = get_variable(t[1])
                         array.append(evalExpr(t[2]))
-                        set_variable(t[1], array)
+                        # set_variable(t[1], array)
+            case 'set_array_value_at_index_by_reference':
+                array = get_variable_by_address(evalExpr(t[1]))
+                index = evalExpr(t[2])
+                value = evalExpr(t[3])
+                if type(array) is not list:
+                    exit(f"TOAM ERROR : La variable '{t[1]}' n'est pas un tableau")
+                if type(index) is not int:
+                    exit(f"TOAM ERROR : L'index d'accès doit être un entier")
+                if index >= len(array):
+                    exit(f"TOAM ERROR : L'index d'accès doit être inférieur à la taille du tableau")
+                array[index] = value
             case 'set_array_value_at_index':
                 # p[0] = ('set_array_value_at_index', p[1], p[3], p[6])
                 array = get_variable(t[1])
@@ -755,6 +802,8 @@ def evalInst(t):
                     define_variable(t[2], evalExpr(t[3]))
             case 'assign':
                 set_variable(t[1], evalExpr(t[2]))
+            case 'assign_by_reference':
+                set_variable_by_address(evalExpr(t[1]), evalExpr(t[2]))
             case 'print':
                 if type(t[1]) is str:
                     if t[1][0] == '"':
@@ -861,6 +910,11 @@ is_global_scope = True
 is_in_function = False
 
 
+class Value:
+    def __init__(self, value):
+        self.value = value
+
+
 def createFunctionStack():
     functions_stack.append([{}])
 
@@ -880,15 +934,15 @@ def isInGlobalScope():
 
 # ('funcparams', ('funcparams', ('funcparams', 4), ('reference', 'tab')), 6)
 # TODO : Gérer + de 3 paramètres et les références
-def declare_variables_function(parameters, call_params, index):
+def declare_variables_function(parameters, call_params):
     if type(call_params) is tuple:
-        define_variable(parameters[2], call_params[index])
+        define_variable(parameters[2], call_params[0])
     else:
         define_variable(parameters[2], call_params)
 
     if len(parameters) == 3:
         return
-    return declare_variables_function(parameters[3], call_params, index + 1)
+    return declare_variables_function(parameters[3], call_params[1])
 
 
 def call_function(name, call_params):
@@ -920,7 +974,7 @@ def call_function(name, call_params):
         createFunctionStack()
         create_scope()
         if type(parameters) is tuple:
-            declare_variables_function(parameters, call_params, 0)
+            declare_variables_function(parameters, call_params)
         result = evalInst(instructions)
         exit_scope()
         exitFunctionStack()
@@ -978,23 +1032,23 @@ def exist_in_scope(name):
 def update_in_scope(stack, name, value):
     for scope in reversed(stack):
         if name in scope:
-            scope[name][0] = value
+            scope[name].value = value
             return True
     return False
 
 
 def define_variable(name, value):
     if isInGlobalScope():
-        global_scope[name] = (value,)
+        global_scope[name] = Value(value)
     elif isInFunction():
-        functions_stack[-1][-1][name] = (value,)
+        functions_stack[-1][-1][name] = Value(value)
     else:
-        runtime_stack[-1][name] = (value,)
+        runtime_stack[-1][name] = Value(value)
 
 
 def get_address_of_var_in_global_scope(name):
     if name in global_scope:
-        return global_scope[name].id()
+        return id(global_scope[name])
     exit(f"Variable non définie: {name}")
 
 
@@ -1004,40 +1058,40 @@ def get_address_of_variable(name):
     elif isInFunction():
         for scope in reversed(functions_stack[-1]):
             if name in scope:
-                return scope[name].id()
+                return id(scope[name])
     else:
         for scope in reversed(runtime_stack):
             if name in scope:
-                return scope[name].id()
+                return id(scope[name])
     return get_address_of_var_in_global_scope(name)
 
 
 def set_variable_by_address(address, value):
     if isInGlobalScope():
-        for tpl in global_scope:
-            if tpl.id() == address:
-                tpl[0] = value
+        for objValue in global_scope.values():
+            if id(objValue) == address:
+                objValue.value = value
     elif isInFunction():
         for scope in reversed(functions_stack[-1]):
-            for tpl in scope:
-                if tpl.id() == address:
-                    tpl[0] = value
+            for objValue in scope.values():
+                if id(objValue) == address:
+                    objValue.value = value
     else:
         for scope in reversed(runtime_stack):
-            for tpl in scope:
-                if tpl.id() == address:
-                    tpl[0] = value
+            for objValue in scope.values():
+                if id(objValue) == address:
+                    objValue.value = value
 
 
 def set_variable(name, value):
     if name in global_scope or isInGlobalScope():
-        global_scope[name][0] = value
+        global_scope[name].value = value
     elif isInFunction():
         if not update_in_scope(functions_stack[-1], name, value):
-            functions_stack[-1][-1][name][0] = value
+            functions_stack[-1][-1][name].value = value
     else:
         if not update_in_scope(runtime_stack, name, value):
-            runtime_stack[-1][name][0] = value
+            runtime_stack[-1][name].value = value
 
 
 def get_variable(name):
@@ -1046,36 +1100,34 @@ def get_variable(name):
     elif isInFunction():
         for scope in reversed(functions_stack[-1]):
             if name in scope:
-                return scope[name][0]
+                return scope[name].value
     else:
         for scope in reversed(runtime_stack):
             if name in scope:
-                return scope[name][0]
+                return scope[name].value
     return get_var_in_global_scope(name)
 
 
 def get_variable_by_address(address):
-    if isInGlobalScope():
-        for tpl in global_scope:
-            if tpl.id() == address:
-                return tpl[0]
-    elif isInFunction():
-        for scope in reversed(functions_stack[-1]):
-            for tpl in scope:
-                if tpl.id() == address:
-                    return tpl[0]
-    else:
-        for scope in reversed(runtime_stack):
-            for tpl in scope:
-                if tpl.id() == address:
-                    return tpl[0]
+    for valueObj in global_scope.values():
+        if id(valueObj) == address:
+            return valueObj.value
+    for stack in functions_stack:
+        for scope in reversed(stack):
+            for valueObj in scope.values():
+                if id(valueObj) == address:
+                    return valueObj.value
+    for scope in reversed(runtime_stack):
+        for valueObj in scope.values():
+            if id(valueObj) == address:
+                return valueObj.value
     error(f"Variable non définie sur l'adresse: {address}")
     exit(1)
 
 
 def get_var_in_global_scope(name):
     if name in global_scope:
-        return global_scope[name][0]
+        return global_scope[name].value
     exit(f"Variable non définie: {name}")
 
 
