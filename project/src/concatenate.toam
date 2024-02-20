@@ -1,15 +1,10 @@
 int x = 0;
 string a = "a";
-print(a+x);
-
-print("Hello world, valeur de a = " + a + " et valeur de x = " + x);
-
+print(a+x); // a0
+print("Hello world, valeur de a = " + a + " et valeur de x = " + x); // Hello world, valeur de a = a et valeur de x = 0
 int t = 5;
 int v = 5;
-print("Valeur de t+v = "+(t+v));
-
+print("Valeur de t+v = "+(t+v)); // Valeur de t+v = 10
 bool b = true;
-print("Valeur de b = "+b);
-
-print("Oui"+(b+t));
-
+print("Valeur de b = "+b); // Valeur de b = True
+print("Oui"+(b+t)); // Oui6

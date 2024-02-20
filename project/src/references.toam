@@ -2,21 +2,23 @@ function void addAtEnd(int[]* tab) {
     *tab[] = 5;
 };
 
-
 int[] tab = [1,2,3];
 
 int a = 5;
-int b = 6;
 int* pa = &a;
-print(*pa);
+print(*pa); // 5
 *pa = 7;
-print(a);
-
-
-// print before update
-print(tab);
-
+print(a); // 7
+print(tab); // [1,2,3]
+print(tab); // [1,2,3]
 addAtEnd(&tab);
-
 // print after update
-print(tab);
+print(tab); // [1,2,3,5]
+
+function void changeValueOf(int* integer) {
+    *integer = 10;
+};
+
+int b = 5;
+changeValueOf(&b);
+print(b); // 10
