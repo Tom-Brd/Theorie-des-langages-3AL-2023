@@ -127,7 +127,7 @@ def p_start(p):
     p[0] = ('START', p[1])
     print('Arbre de dérivation = ', p[0])
     # printTreeGraph(p[1])
-    # evalSyntax(p[1])
+    evalSyntax(p[1])
     global runtime_stack
     runtime_stack = [{}]
     evalInst(p[1])
@@ -168,6 +168,7 @@ def p_type_params(p):
                 | TYPE'''
     p[0] = p[1]
 
+
 def p_params(p):
     '''PARAMS : TYPEPARAM NAME
                 | TYPEPARAM NAME COMMA PARAMS'''
@@ -190,6 +191,7 @@ def p_statement_add_array(p):
         p[0] = ('add_array', p[1], p[5])
     else:
         p[0] = ('add_array_by_reference', p[2], p[6])
+
 
 def p_expr_len_array(p):
     '''expression : LEN LPAREN expression RPAREN'''
@@ -932,6 +934,7 @@ def isInGlobalScope():
     global is_global_scope
     return is_global_scope
 
+
 # ('funcparams', ('funcparams', ('funcparams', 4), ('reference', 'tab')), 6)
 # TODO : Gérer + de 3 paramètres et les références
 def declare_variables_function(parameters, call_params):
@@ -1067,20 +1070,23 @@ def get_address_of_variable(name):
 
 
 def set_variable_by_address(address, value):
-    if isInGlobalScope():
-        for objValue in global_scope.values():
-            if id(objValue) == address:
-                objValue.value = value
-    elif isInFunction():
+    if isInFunction():
         for scope in reversed(functions_stack[-1]):
             for objValue in scope.values():
                 if id(objValue) == address:
                     objValue.value = value
-    else:
-        for scope in reversed(runtime_stack):
-            for objValue in scope.values():
-                if id(objValue) == address:
-                    objValue.value = value
+                    return
+
+    for objValue in global_scope.values():
+        if id(objValue) == address:
+            objValue.value = value
+            return
+
+    for scope in reversed(runtime_stack):
+        for objValue in scope.values():
+            if id(objValue) == address:
+                objValue.value = value
+                return
 
 
 def set_variable(name, value):
@@ -1092,6 +1098,23 @@ def set_variable(name, value):
     else:
         if not update_in_scope(runtime_stack, name, value):
             runtime_stack[-1][name].value = value
+
+
+def get_variable_name_by_address(address):
+    for name, valueObj in global_scope.items():
+        if id(valueObj) == address:
+            return name
+    for stack in functions_stack:
+        for scope in reversed(stack):
+            for name, valueObj in scope.items():
+                if id(valueObj) == address:
+                    return name
+    for scope in reversed(runtime_stack):
+        for name, valueObj in scope.items():
+            if id(valueObj) == address:
+                return name
+    error(f"Variable non définie sur l'adresse: {address}")
+    exit(1)
 
 
 def get_variable(name):

@@ -22,3 +22,27 @@ function void changeValueOf(int* integer) {
 int b = 5;
 changeValueOf(&b);
 print(b); // 10
+
+if (b == 10) {
+    int x = 50;
+    changeValueOf(&x);
+    print(x); // 10
+};
+
+function void changeStringValueOf(string* str) {
+    *str = "new value";
+};
+
+string s = "old value";
+changeStringValueOf(&s);
+print(s); // new value
+
+function void changeArrayValueOf(int[]* tab) {
+    *tab[0] = 10;
+};
+
+if (b == 10) {
+    int[] tab2 = [1,2,3];
+    changeArrayValueOf(&tab2);
+    print(tab2); // [10,2,3]
+};
